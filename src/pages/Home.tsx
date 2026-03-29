@@ -106,21 +106,25 @@ const Home = () => {
                   {section.name}
                 </h2>
               </div>
-              <div className="grid grid-cols-4 gap-3">
+              <div className="grid grid-cols-4 gap-2">
                 {sectionCats.map((cat) => (
                   <button
                     key={cat.id}
                     onClick={() => navigate(`/category/${cat.id}`)}
-                    className={`flex flex-col items-center gap-1.5 rounded-lg p-2.5 transition-colors ${
-                      section.isGold ? 'border border-accent/30 bg-accent/5 hover:bg-accent/10' : 'bg-surface hover:bg-surface-elevated'
+                    className={`relative overflow-hidden rounded-xl aspect-square ${
+                      section.isGold ? 'ring-1 ring-accent/40' : ''
                     }`}
                   >
-                    <div className={`flex h-10 w-10 items-center justify-center rounded-full ${section.isGold ? 'bg-accent/20' : 'bg-primary/20'}`}>
-                      <span className={`text-lg ${section.isGold ? 'text-accent' : 'text-primary'}`}>
-                        {cat.name.charAt(0)}
-                      </span>
-                    </div>
-                    <span className="text-center text-[10px] font-medium leading-tight text-foreground">{cat.name}</span>
+                    <img
+                      src={cat.image || '/placeholder.svg'}
+                      alt={cat.name}
+                      className="h-full w-full object-cover"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                    <span className="absolute bottom-1 left-0 right-0 px-1 text-center text-[9px] font-semibold leading-tight text-white">
+                      {cat.name}
+                    </span>
                   </button>
                 ))}
               </div>

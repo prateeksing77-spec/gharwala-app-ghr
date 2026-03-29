@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { CartItem, Product, Order, Address, Notification } from '@/types';
+import { deliverySettings } from '@/data/settings';
 
 interface AppState {
   // Auth
@@ -43,7 +44,7 @@ export const useAppStore = create<AppState>()(
       isLoggedIn: false,
       phone: '',
       userName: 'User',
-      selectedArea: 'Boring Road',
+      selectedArea: 'Jalalpur',
       setLoggedIn: (phone) => set({ isLoggedIn: true, phone }),
       logout: () => set({ isLoggedIn: false, phone: '', cart: [] }),
       setArea: (area) => set({ selectedArea: area }),
@@ -76,7 +77,7 @@ export const useAppStore = create<AppState>()(
       placeOrder: (address, paymentMethod, couponCode, discount = 0) => {
         const cart = get().cart;
         const subtotal = cart.reduce((s, i) => s + i.product.price * i.quantity, 0);
-        const delivery = subtotal >= 299 ? 0 : 30;
+        const delivery = subtotal >= deliverySettings.freeDeliveryAbove ? 0 : deliverySettings.deliveryCharge;
         const orderId = `GW-${get().orderCounter}`;
         const order: Order = {
           id: orderId,
@@ -112,7 +113,8 @@ export const useAppStore = create<AppState>()(
 
       notifications: [
         { id: 'n1', title: 'Welcome to GharWala!', message: 'Ghar baithe sab kuch - start shopping now.', read: false, createdAt: new Date().toISOString() },
-        { id: 'n2', title: 'Flat 50 Off', message: 'Use code FIRST50 on your first order!', read: false, createdAt: new Date().toISOString() },
+        { id: 'n2', title: 'Get 10% OFF', message: 'Use code GHAR10 on orders above Rs.300!', read: false, createdAt: new Date().toISOString() },
+        { id: 'n3', title: 'Flat 50 Off', message: 'Use code FIRST50 on your first order above Rs.200!', read: false, createdAt: new Date().toISOString() },
       ],
       markAllRead: () => set({ notifications: get().notifications.map((n) => ({ ...n, read: true })) }),
       unreadCount: () => get().notifications.filter((n) => !n.read).length,

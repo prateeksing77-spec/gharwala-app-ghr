@@ -1,10 +1,16 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, MapPin, Plus, CreditCard, Banknote } from 'lucide-react';
+import { ArrowLeft, MapPin, Plus, CreditCard, Banknote, Shield, Upload, Image } from 'lucide-react';
 import { useAppStore } from '@/stores/cartStore';
 import { areas } from '@/data/products';
+import { deliverySettings, upiSettings } from '@/data/settings';
 import toast from 'react-hot-toast';
 import BottomNav from '@/components/BottomNav';
+
+const sanitize = (v: string) => v.replace(/<[^>]*>/g, '').replace(/[<>"'&]/g, '');
+const validatePhone = (v: string) => /^[6-9]\d{9}$/.test(v);
+const validatePincode = (v: string) => /^\d{6}$/.test(v);
+const validateName = (v: string) => /^[a-zA-Z\s]{1,50}$/.test(v.trim());
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -13,24 +19,48 @@ const Checkout = () => {
   const [payment, setPayment] = useState<'cod' | 'upi'>('cod');
   const [showAddForm, setShowAddForm] = useState(addresses.length === 0);
   const [form, setForm] = useState({ name: '', phone: '', house: '', street: '', landmark: '', area: areas[0], pincode: '' });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [upiScreenshot, setUpiScreenshot] = useState<string | null>(null);
 
   const subtotal = getCartTotal();
-  const delivery = subtotal >= 299 ? 0 : 30;
+  const delivery = subtotal >= deliverySettings.freeDeliveryAbove ? 0 : deliverySettings.deliveryCharge;
   const total = subtotal + delivery;
 
-  const validatePhone = (v: string) => /^[6-9]\d{9}$/.test(v);
-  const validatePincode = (v: string) => /^\d{6}$/.test(v);
+  const validateForm = () => {
+    const errs: Record<string, string> = {};
+    if (!validateName(form.name)) errs.name = 'Only letters and spaces, max 50 chars';
+    if (!validatePhone(form.phone)) errs.phone = 'Valid 10-digit number starting with 6-9';
+    if (!sanitize(form.house).trim()) errs.house = 'Required';
+    if (!sanitize(form.street).trim()) errs.street = 'Required';
+    if (!validatePincode(form.pincode)) errs.pincode = 'Valid 6-digit PIN code';
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  };
 
   const handleAddAddress = () => {
-    if (!form.name.trim() || !form.house.trim() || !form.street.trim()) {
-      toast.error('Fill all required fields');
-      return;
-    }
-    if (!validatePhone(form.phone)) { toast.error('Invalid phone number'); return; }
-    if (!validatePincode(form.pincode)) { toast.error('Invalid pincode'); return; }
-    addAddress({ ...form, isDefault: false });
+    if (!validateForm()) return;
+    const sanitized = {
+      name: sanitize(form.name).trim(),
+      phone: form.phone,
+      house: sanitize(form.house).trim().slice(0, 200),
+      street: sanitize(form.street).trim().slice(0, 200),
+      landmark: sanitize(form.landmark).trim().slice(0, 200),
+      area: form.area,
+      pincode: form.pincode,
+      isDefault: false,
+    };
+    addAddress(sanitized);
     setShowAddForm(false);
     toast.success('Address added');
+  };
+
+  const handleScreenshot = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => setUpiScreenshot(reader.result as string);
+      reader.readAsDataURL(file);
+    }
   };
 
   const handlePlaceOrder = () => {
@@ -40,20 +70,48 @@ const Checkout = () => {
       return;
     }
     if (cart.length === 0) { toast.error('Cart is empty'); return; }
+    if (subtotal < deliverySettings.minOrderAmount) { toast.error(`Minimum order Rs.${deliverySettings.minOrderAmount}`); return; }
 
     let finalAddr = addr;
     if (!finalAddr && showAddForm) {
-      if (!form.name.trim() || !validatePhone(form.phone) || !form.house.trim()) {
-        toast.error('Complete the address form');
-        return;
-      }
-      addAddress({ ...form, isDefault: true });
-      finalAddr = { ...form, id: 'temp', isDefault: true };
+      if (!validateForm()) return;
+      const sanitized = {
+        name: sanitize(form.name).trim(),
+        phone: form.phone,
+        house: sanitize(form.house).trim().slice(0, 200),
+        street: sanitize(form.street).trim().slice(0, 200),
+        landmark: sanitize(form.landmark).trim().slice(0, 200),
+        area: form.area,
+        pincode: form.pincode,
+        isDefault: true,
+      };
+      addAddress(sanitized);
+      finalAddr = { ...sanitized, id: 'temp' };
     }
 
     const orderId = placeOrder(finalAddr!, payment);
+    toast.success('Order placed successfully!');
     navigate(`/order-confirmation/${orderId}`, { replace: true });
   };
+
+  const formField = (field: 'name' | 'phone' | 'house' | 'street' | 'landmark', label: string, type = 'text') => (
+    <div key={field}>
+      <input value={form[field]}
+        onChange={(e) => {
+          let val = e.target.value;
+          if (field === 'phone') val = val.replace(/\D/g, '').slice(0, 10);
+          else val = val.slice(0, 200);
+          setForm({ ...form, [field]: val });
+          if (errors[field]) setErrors({ ...errors, [field]: '' });
+        }}
+        placeholder={label + (field === 'landmark' ? ' (optional)' : ' *')}
+        className={`w-full rounded-lg border bg-background px-3 py-2.5 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-primary ${errors[field] ? 'border-destructive' : 'border-border'}`}
+        type={type}
+        maxLength={field === 'phone' ? 10 : 200}
+      />
+      {errors[field] && <p className="mt-0.5 text-xs text-destructive">{errors[field]}</p>}
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-background pb-32">
@@ -84,22 +142,23 @@ const Checkout = () => {
 
           {showAddForm && (
             <div className="space-y-3 rounded-lg border border-border bg-surface p-4">
-              {(['name', 'phone', 'house', 'street', 'landmark'] as const).map((field) => (
-                <input key={field} value={form[field]}
-                  onChange={(e) => setForm({ ...form, [field]: e.target.value.slice(0, field === 'phone' ? 10 : 100) })}
-                  placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
-                  className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-primary"
-                  type={field === 'phone' ? 'tel' : 'text'}
-                  maxLength={field === 'phone' ? 10 : 100}
-                />
-              ))}
-              <select value={form.area} onChange={(e) => setForm({ ...form, area: e.target.value })}
-                className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm text-foreground outline-none focus:border-primary">
-                {areas.map((a) => <option key={a} value={a}>{a}</option>)}
-              </select>
-              <input value={form.pincode} onChange={(e) => setForm({ ...form, pincode: e.target.value.replace(/\D/g, '').slice(0, 6) })}
-                placeholder="Pincode" type="tel" maxLength={6}
-                className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-primary" />
+              {formField('name', 'Name')}
+              {formField('phone', 'Phone', 'tel')}
+              {formField('house', 'House / Flat')}
+              {formField('street', 'Street / Mohalla')}
+              {formField('landmark', 'Landmark')}
+              <div>
+                <select value={form.area} onChange={(e) => setForm({ ...form, area: e.target.value })}
+                  className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm text-foreground outline-none focus:border-primary">
+                  {areas.map((a) => <option key={a} value={a}>{a}</option>)}
+                </select>
+              </div>
+              <div>
+                <input value={form.pincode} onChange={(e) => { setForm({ ...form, pincode: e.target.value.replace(/\D/g, '').slice(0, 6) }); if (errors.pincode) setErrors({ ...errors, pincode: '' }); }}
+                  placeholder="PIN Code *" type="tel" maxLength={6}
+                  className={`w-full rounded-lg border bg-background px-3 py-2.5 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-primary ${errors.pincode ? 'border-destructive' : 'border-border'}`} />
+                {errors.pincode && <p className="mt-0.5 text-xs text-destructive">{errors.pincode}</p>}
+              </div>
               {addresses.length === 0 ? null : (
                 <button onClick={handleAddAddress} className="w-full rounded-lg bg-primary py-2.5 text-sm font-semibold text-primary-foreground">Save Address</button>
               )}
@@ -120,6 +179,28 @@ const Checkout = () => {
             <CreditCard className="h-5 w-5 text-accent" />
             <span className="text-sm font-medium text-foreground">UPI Payment</span>
           </button>
+
+          {payment === 'upi' && (
+            <div className="rounded-lg border border-border bg-surface p-4 space-y-3">
+              <div className="text-center">
+                <p className="text-sm text-muted-foreground">UPI ID</p>
+                <p className="text-base font-bold text-primary">{upiSettings.upiId}</p>
+              </div>
+              <div className="flex justify-center">
+                <div className="h-32 w-32 rounded-lg bg-foreground/10 flex items-center justify-center">
+                  <Image className="h-10 w-10 text-muted-foreground" />
+                </div>
+              </div>
+              <label className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-primary py-2.5 text-sm font-medium text-primary">
+                <Upload className="h-4 w-4" />
+                Upload Payment Screenshot
+                <input type="file" accept="image/*" onChange={handleScreenshot} className="hidden" />
+              </label>
+              {upiScreenshot && (
+                <img src={upiScreenshot} alt="Payment screenshot" className="mx-auto h-24 rounded-lg object-contain" />
+              )}
+            </div>
+          )}
         </div>
 
         {/* Summary */}
@@ -128,6 +209,12 @@ const Checkout = () => {
           <div className="flex justify-between text-sm"><span className="text-muted-foreground">Items ({cart.length})</span><span className="text-foreground">Rs.{subtotal}</span></div>
           <div className="flex justify-between text-sm"><span className="text-muted-foreground">Delivery</span><span className={delivery === 0 ? 'text-primary' : 'text-foreground'}>{delivery === 0 ? 'FREE' : `Rs.${delivery}`}</span></div>
           <div className="border-t border-border pt-2 flex justify-between font-bold"><span className="text-foreground">Total</span><span className="text-foreground">Rs.{total}</span></div>
+        </div>
+
+        {/* Secured footer */}
+        <div className="flex items-center justify-center gap-1.5 py-2">
+          <Shield className="h-3.5 w-3.5 text-muted-foreground" />
+          <span className="text-xs text-muted-foreground">Secured by GharWala</span>
         </div>
       </div>
 

@@ -12,6 +12,7 @@ const Login = () => {
   const [phone, setPhone] = useState('');
   const [otp, setOtp] = useState(['', '', '', '']);
   const [otpSent, setOtpSent] = useState(false);
+  const [otpCooldown, setOtpCooldown] = useState(0);
 
   if (isLoggedIn) {
     navigate('/home', { replace: true });
@@ -21,12 +22,23 @@ const Login = () => {
   const validatePhone = (value: string) => /^[6-9]\d{9}$/.test(value);
 
   const handleSendOtp = () => {
+    if (otpCooldown > 0) {
+      toast.error(`Please wait ${otpCooldown} seconds`);
+      return;
+    }
     if (!validatePhone(phone)) {
-      toast.error('Enter a valid 10-digit phone number');
+      toast.error('Enter a valid 10-digit phone number starting with 6-9');
       return;
     }
     setOtpSent(true);
     toast.success('OTP sent to +91 ' + phone);
+    setOtpCooldown(30);
+    const interval = setInterval(() => {
+      setOtpCooldown((prev) => {
+        if (prev <= 1) { clearInterval(interval); return 0; }
+        return prev - 1;
+      });
+    }, 1000);
   };
 
   const handleOtpChange = (index: number, value: string) => {
@@ -127,6 +139,13 @@ const Login = () => {
             >
               Change number
             </button>
+            {otpCooldown > 0 ? (
+              <p className="text-center text-xs text-muted-foreground">Resend OTP in {otpCooldown}s</p>
+            ) : (
+              <button onClick={handleSendOtp} className="w-full text-center text-sm text-primary">
+                Resend OTP
+              </button>
+            )}
           </>
         )}
       </motion.div>
