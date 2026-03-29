@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Minus, Plus, Trash2, ShoppingCart, Tag, Truck } from 'lucide-react';
 import { useAppStore } from '@/stores/cartStore';
 import { coupons } from '@/data/products';
+import { deliverySettings } from '@/data/settings';
 import BottomNav from '@/components/BottomNav';
 import toast from 'react-hot-toast';
 
@@ -13,14 +14,14 @@ const Cart = () => {
   const [appliedCoupon, setAppliedCoupon] = useState<typeof coupons[0] | null>(null);
 
   const subtotal = getCartTotal();
-  const delivery = subtotal >= 299 ? 0 : 30;
+  const delivery = subtotal >= deliverySettings.freeDeliveryAbove ? 0 : deliverySettings.deliveryCharge;
   const discount = appliedCoupon
     ? appliedCoupon.type === 'percent'
       ? Math.round(subtotal * appliedCoupon.discount / 100)
       : appliedCoupon.discount
     : 0;
   const total = subtotal + delivery - discount;
-  const freeDeliveryGap = 299 - subtotal;
+  const freeDeliveryGap = deliverySettings.freeDeliveryAbove - subtotal;
 
   const applyCoupon = () => {
     const code = couponInput.trim().toUpperCase();

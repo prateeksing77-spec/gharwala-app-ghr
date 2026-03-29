@@ -4,6 +4,7 @@ import { Product } from '@/types';
 import { useAppStore } from '@/stores/cartStore';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import toast from 'react-hot-toast';
 
 interface ProductCardProps {
   product: Product;
@@ -11,9 +12,15 @@ interface ProductCardProps {
 
 const ProductCard = ({ product }: ProductCardProps) => {
   const navigate = useNavigate();
-  const { cart, addToCart, updateQuantity, removeFromCart } = useAppStore();
+  const { cart, addToCart, updateQuantity } = useAppStore();
   const cartItem = cart.find((i) => i.product.id === product.id);
   const discount = product.mrp > product.price ? Math.round(((product.mrp - product.price) / product.mrp) * 100) : 0;
+
+  const handleAdd = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    addToCart(product);
+    toast.success(`${product.name} added to cart`);
+  };
 
   return (
     <motion.div
@@ -58,7 +65,7 @@ const ProductCard = ({ product }: ProductCardProps) => {
           </div>
           {!cartItem ? (
             <button
-              onClick={(e) => { e.stopPropagation(); addToCart(product); }}
+              onClick={handleAdd}
               className="rounded-md border border-primary px-3 py-1 text-xs font-bold text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
             >
               ADD

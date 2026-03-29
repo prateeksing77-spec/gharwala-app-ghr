@@ -23,11 +23,10 @@ const Categories = () => {
               <div className="grid grid-cols-3 gap-2">
                 {cats.map((cat) => (
                   <button key={cat.id} onClick={() => navigate(`/category/${cat.id}`)}
-                    className={`rounded-lg p-3 text-center ${section.isGold ? 'border border-accent/30 bg-accent/5' : 'bg-surface'}`}>
-                    <div className={`mx-auto mb-1.5 flex h-10 w-10 items-center justify-center rounded-full ${section.isGold ? 'bg-accent/20' : 'bg-primary/20'}`}>
-                      <span className={section.isGold ? 'text-accent' : 'text-primary'}>{cat.name.charAt(0)}</span>
-                    </div>
-                    <span className="text-xs font-medium text-foreground">{cat.name}</span>
+                    className={`relative overflow-hidden rounded-xl aspect-square ${section.isGold ? 'ring-1 ring-accent/40' : ''}`}>
+                    <img src={cat.image || '/placeholder.svg'} alt={cat.name} className="h-full w-full object-cover" loading="lazy" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                    <span className="absolute bottom-1.5 left-0 right-0 px-1 text-center text-[10px] font-semibold leading-tight text-white">{cat.name}</span>
                   </button>
                 ))}
               </div>
