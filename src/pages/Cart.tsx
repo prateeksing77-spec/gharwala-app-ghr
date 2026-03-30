@@ -37,8 +37,8 @@ const Cart = () => {
       <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
         <ShoppingCart className="h-20 w-20 text-muted-foreground/30 mb-4" />
         <h2 className="text-xl font-bold text-foreground mb-2">Your cart is empty</h2>
-        <p className="text-muted-foreground mb-6">Add items to get started</p>
-        <button onClick={() => navigate('/home')} className="rounded-lg bg-primary px-6 py-3 font-semibold text-primary-foreground">
+        <p className="text-muted-foreground mb-6">Apna kirana add karo</p>
+        <button onClick={() => navigate('/home')} className="rounded-lg bg-accent px-6 py-3 font-semibold text-accent-foreground">
           Browse Products
         </button>
         <BottomNav />
@@ -54,27 +54,27 @@ const Cart = () => {
       </div>
 
       {freeDeliveryGap > 0 && (
-        <div className="mx-4 mb-3 flex items-center gap-2 rounded-lg bg-primary/10 px-3 py-2">
-          <Truck className="h-4 w-4 text-primary" />
-          <span className="text-xs text-primary">Add Rs.{Math.ceil(freeDeliveryGap)} more for FREE delivery</span>
+        <div className="mx-4 mb-3 flex items-center gap-2 rounded-lg bg-accent/10 border-l-[3px] border-accent px-3 py-2">
+          <Truck className="h-4 w-4 text-accent" />
+          <span className="text-xs text-accent">Add Rs.{Math.ceil(freeDeliveryGap)} more for FREE delivery</span>
         </div>
       )}
 
       <div className="space-y-3 px-4">
         {cart.map((item) => (
-          <div key={item.product.id} className="flex items-center gap-3 rounded-lg bg-surface p-3">
-            <img src={item.product.image} alt={item.product.name} className="h-16 w-16 rounded-lg bg-foreground/5 object-contain p-1" />
+          <div key={item.product.id} className="flex items-center gap-3 rounded-lg bg-card p-3">
+            <img src={item.product.image} alt={item.product.name} className="h-16 w-16 rounded-lg bg-foreground/5 object-cover" />
             <div className="flex-1">
               <p className="text-sm font-medium text-foreground">{item.product.name}</p>
               <p className="text-xs text-muted-foreground">{item.selectedWeight || item.product.weight}</p>
-              <p className="text-sm font-bold text-primary">Rs.{item.product.price * item.quantity}</p>
+              <p className="text-sm font-bold text-accent">Rs.{item.product.price * item.quantity}</p>
             </div>
             <div className="flex flex-col items-end gap-2">
               <button onClick={() => removeFromCart(item.product.id)}><Trash2 className="h-4 w-4 text-destructive" /></button>
-              <div className="flex items-center gap-2 rounded-md bg-primary px-2 py-0.5">
-                <button onClick={() => updateQuantity(item.product.id, item.quantity - 1)}><Minus className="h-3.5 w-3.5 text-primary-foreground" /></button>
-                <span className="min-w-[16px] text-center text-sm font-bold text-primary-foreground">{item.quantity}</span>
-                <button onClick={() => updateQuantity(item.product.id, item.quantity + 1)}><Plus className="h-3.5 w-3.5 text-primary-foreground" /></button>
+              <div className="flex items-center gap-2 rounded-md bg-accent px-2 py-0.5">
+                <button onClick={() => updateQuantity(item.product.id, item.quantity - 1)}><Minus className="h-3.5 w-3.5 text-accent-foreground" /></button>
+                <span className="min-w-[16px] text-center text-sm font-bold text-accent-foreground">{item.quantity}</span>
+                <button onClick={() => updateQuantity(item.product.id, item.quantity + 1)}><Plus className="h-3.5 w-3.5 text-accent-foreground" /></button>
               </div>
             </div>
           </div>
@@ -83,30 +83,30 @@ const Cart = () => {
 
       {/* Coupon */}
       <div className="mx-4 mt-4 flex gap-2">
-        <div className="flex flex-1 items-center gap-2 rounded-lg bg-surface px-3 py-2.5">
+        <div className="flex flex-1 items-center gap-2 rounded-lg bg-card border border-border px-3 py-2.5">
           <Tag className="h-4 w-4 text-muted-foreground" />
           <input value={couponInput} onChange={(e) => setCouponInput(e.target.value)} placeholder="Coupon code"
             className="flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground" />
         </div>
-        <button onClick={applyCoupon} className="rounded-lg bg-primary px-4 text-sm font-semibold text-primary-foreground">Apply</button>
+        <button onClick={applyCoupon} className="rounded-lg bg-accent px-4 text-sm font-semibold text-accent-foreground">Apply</button>
       </div>
       {appliedCoupon && (
-        <p className="mx-4 mt-1 text-xs text-primary">
+        <p className="mx-4 mt-1 text-xs text-accent">
           {appliedCoupon.code} applied - Rs.{discount} off
         </p>
       )}
 
       {/* Bill */}
-      <div className="mx-4 mt-4 space-y-2 rounded-lg bg-surface p-4">
+      <div className="mx-4 mt-4 space-y-2 rounded-lg bg-card p-4">
         <h3 className="font-bold text-foreground">Bill Details</h3>
         <div className="flex justify-between text-sm"><span className="text-muted-foreground">Subtotal</span><span className="text-foreground">Rs.{subtotal}</span></div>
         <div className="flex justify-between text-sm"><span className="text-muted-foreground">Delivery</span><span className={delivery === 0 ? 'text-primary' : 'text-foreground'}>{delivery === 0 ? 'FREE' : `Rs.${delivery}`}</span></div>
-        {discount > 0 && <div className="flex justify-between text-sm"><span className="text-muted-foreground">Discount</span><span className="text-primary">-Rs.{discount}</span></div>}
+        {discount > 0 && <div className="flex justify-between text-sm"><span className="text-muted-foreground">Discount</span><span className="text-accent">-Rs.{discount}</span></div>}
         <div className="border-t border-border pt-2 flex justify-between font-bold"><span className="text-foreground">Total</span><span className="text-foreground">Rs.{total}</span></div>
       </div>
 
       <div className="fixed bottom-16 left-0 right-0 z-40 px-4 pb-2">
-        <button onClick={() => navigate('/checkout')} className="w-full rounded-lg bg-primary py-3.5 font-bold text-primary-foreground">
+        <button onClick={() => navigate('/checkout')} className="w-full rounded-lg bg-accent py-3.5 font-bold text-accent-foreground">
           Proceed to Checkout - Rs.{total}
         </button>
       </div>

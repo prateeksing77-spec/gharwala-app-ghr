@@ -4,7 +4,6 @@ import { CartItem, Product, Order, Address, Notification } from '@/types';
 import { deliverySettings } from '@/data/settings';
 
 interface AppState {
-  // Auth
   isLoggedIn: boolean;
   phone: string;
   userName: string;
@@ -14,7 +13,6 @@ interface AppState {
   setArea: (area: string) => void;
   setUserName: (name: string) => void;
 
-  // Cart
   cart: CartItem[];
   addToCart: (product: Product, weight?: string) => void;
   removeFromCart: (productId: string) => void;
@@ -23,16 +21,13 @@ interface AppState {
   getCartTotal: () => number;
   getCartCount: () => number;
 
-  // Orders
   orders: Order[];
   orderCounter: number;
   placeOrder: (address: Address, paymentMethod: 'cod' | 'upi', couponCode?: string, discount?: number) => string;
 
-  // Addresses
   addresses: Address[];
   addAddress: (address: Omit<Address, 'id'>) => void;
 
-  // Notifications
   notifications: Notification[];
   markAllRead: () => void;
   unreadCount: () => number;
@@ -78,7 +73,7 @@ export const useAppStore = create<AppState>()(
         const cart = get().cart;
         const subtotal = cart.reduce((s, i) => s + i.product.price * i.quantity, 0);
         const delivery = subtotal >= deliverySettings.freeDeliveryAbove ? 0 : deliverySettings.deliveryCharge;
-        const orderId = `GW-${get().orderCounter}`;
+        const orderId = `KN-${get().orderCounter}`;
         const order: Order = {
           id: orderId,
           items: [...cart],
@@ -112,13 +107,13 @@ export const useAppStore = create<AppState>()(
       },
 
       notifications: [
-        { id: 'n1', title: 'Welcome to GharWala!', message: 'Ghar baithe sab kuch - start shopping now.', read: false, createdAt: new Date().toISOString() },
-        { id: 'n2', title: 'Get 10% OFF', message: 'Use code GHAR10 on orders above Rs.300!', read: false, createdAt: new Date().toISOString() },
+        { id: 'n1', title: 'Welcome to KiraNey!', message: 'Ghar baithe kirana - start shopping now.', read: false, createdAt: new Date().toISOString() },
+        { id: 'n2', title: 'Get 10% OFF', message: 'Use code KIRANA10 on orders above Rs.300!', read: false, createdAt: new Date().toISOString() },
         { id: 'n3', title: 'Flat 50 Off', message: 'Use code FIRST50 on your first order above Rs.200!', read: false, createdAt: new Date().toISOString() },
       ],
       markAllRead: () => set({ notifications: get().notifications.map((n) => ({ ...n, read: true })) }),
       unreadCount: () => get().notifications.filter((n) => !n.read).length,
     }),
-    { name: 'gharwala-store' }
+    { name: 'kiraney-store' }
   )
 );

@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ShoppingBag, Phone, ArrowRight } from 'lucide-react';
+import { Phone, ArrowRight } from 'lucide-react';
 import { useAppStore } from '@/stores/cartStore';
+import KiraNeyLogo from '@/components/KiraNeyLogo';
 import toast from 'react-hot-toast';
 
 const Login = () => {
@@ -59,7 +60,7 @@ const Login = () => {
       return;
     }
     setLoggedIn(phone);
-    toast.success('Welcome to GharWala!');
+    toast.success('Welcome to KiraNey!');
     navigate('/home', { replace: true });
   };
 
@@ -70,11 +71,9 @@ const Login = () => {
         animate={{ y: 0, opacity: 1 }}
         className="mb-10 flex flex-col items-center gap-3"
       >
-        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary">
-          <ShoppingBag className="h-8 w-8 text-primary-foreground" />
-        </div>
-        <h1 className="text-3xl font-bold text-foreground">GharWala</h1>
-        <p className="text-muted-foreground">Ghar baithe sab kuch</p>
+        <KiraNeyLogo size={80} />
+        <h1 className="text-3xl font-bold text-foreground">KiraNey</h1>
+        <p className="text-muted-foreground">Ghar baithe kirana</p>
       </motion.div>
 
       <motion.div
@@ -102,7 +101,7 @@ const Login = () => {
             </div>
             <button
               onClick={handleSendOtp}
-              className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary p-3.5 font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+              className="flex w-full items-center justify-center gap-2 rounded-lg bg-accent p-3.5 font-semibold text-accent-foreground transition-opacity hover:opacity-90"
             >
               Send OTP
               <ArrowRight className="h-5 w-5" />
@@ -121,14 +120,14 @@ const Login = () => {
                     maxLength={1}
                     value={digit}
                     onChange={(e) => handleOtpChange(i, e.target.value.replace(/\D/g, ''))}
-                    className="h-14 w-14 rounded-lg border border-border bg-surface text-center text-2xl font-bold text-foreground outline-none focus:border-primary"
+                    className="h-14 w-14 rounded-lg border border-border bg-surface text-center text-2xl font-bold text-foreground outline-none focus:border-accent"
                   />
                 ))}
               </div>
             </div>
             <button
               onClick={handleVerify}
-              className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary p-3.5 font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+              className="flex w-full items-center justify-center gap-2 rounded-lg bg-accent p-3.5 font-semibold text-accent-foreground transition-opacity hover:opacity-90"
             >
               Verify OTP
               <ArrowRight className="h-5 w-5" />
@@ -142,7 +141,7 @@ const Login = () => {
             {otpCooldown > 0 ? (
               <p className="text-center text-xs text-muted-foreground">Resend OTP in {otpCooldown}s</p>
             ) : (
-              <button onClick={handleSendOtp} className="w-full text-center text-sm text-primary">
+              <button onClick={handleSendOtp} className="w-full text-center text-sm text-accent">
                 Resend OTP
               </button>
             )}

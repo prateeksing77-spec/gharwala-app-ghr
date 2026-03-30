@@ -7,6 +7,7 @@ import { areas } from '@/data/products';
 import BottomNav from '@/components/BottomNav';
 import CartBar from '@/components/CartBar';
 import BannerCarousel from '@/components/BannerCarousel';
+import KiraNeyLogo from '@/components/KiraNeyLogo';
 
 const tabs = ['All', 'Seasonal', 'Local Specials'];
 
@@ -28,19 +29,22 @@ const Home = () => {
       {/* Header */}
       <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm px-4 pt-3 pb-2">
         <div className="flex items-center justify-between">
-          <button onClick={() => setShowAreaPicker(!showAreaPicker)} className="flex items-center gap-1">
-            <div>
-              <p className="text-xs text-muted-foreground">Deliver to</p>
-              <div className="flex items-center gap-1">
-                <span className="font-semibold text-foreground">{selectedArea}</span>
-                <ChevronDown className="h-4 w-4 text-muted-foreground" />
+          <div className="flex items-center gap-2">
+            <KiraNeyLogo size={32} />
+            <button onClick={() => setShowAreaPicker(!showAreaPicker)} className="flex items-center gap-1">
+              <div>
+                <p className="text-[10px] text-muted-foreground">Deliver to</p>
+                <div className="flex items-center gap-1">
+                  <span className="font-semibold text-foreground text-sm">{selectedArea}</span>
+                  <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />
+                </div>
               </div>
-            </div>
-          </button>
+            </button>
+          </div>
           <button onClick={() => navigate('/notifications')} className="relative p-2">
             <Bell className="h-6 w-6 text-foreground" />
             {unreadCount() > 0 && (
-              <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground">
+              <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-accent-foreground animate-pulse">
                 {unreadCount()}
               </span>
             )}
@@ -51,7 +55,7 @@ const Home = () => {
           <div className="mt-2 rounded-lg border border-border bg-surface p-2">
             {areas.map((area) => (
               <button key={area} onClick={() => { setArea(area); setShowAreaPicker(false); }}
-                className={`block w-full rounded px-3 py-2 text-left text-sm ${area === selectedArea ? 'bg-primary/20 text-primary' : 'text-foreground hover:bg-surface-elevated'}`}>
+                className={`block w-full rounded px-3 py-2 text-left text-sm ${area === selectedArea ? 'bg-accent/20 text-accent' : 'text-foreground hover:bg-surface-elevated'}`}>
                 {area}
               </button>
             ))}
@@ -59,7 +63,7 @@ const Home = () => {
         )}
 
         {/* Search */}
-        <div className="mt-3 flex items-center gap-2 rounded-lg bg-surface px-3 py-2.5">
+        <div className="mt-3 flex items-center gap-2 rounded-lg bg-card border border-border px-3 py-2.5">
           <Search className="h-5 w-5 text-muted-foreground" />
           <input
             type="text"
@@ -77,12 +81,12 @@ const Home = () => {
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`relative whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
-                activeTab === tab ? 'bg-primary text-primary-foreground' : 'bg-surface text-muted-foreground'
+                activeTab === tab ? 'bg-accent text-accent-foreground' : 'bg-card text-muted-foreground'
               }`}
             >
               {tab}
               {tab === 'Seasonal' && (
-                <span className="ml-1 rounded bg-accent px-1 py-0.5 text-[9px] font-bold text-accent-foreground">NEW</span>
+                <span className="ml-1 rounded bg-primary px-1 py-0.5 text-[9px] font-bold text-primary-foreground">NEW</span>
               )}
             </button>
           ))}
@@ -99,21 +103,25 @@ const Home = () => {
             const filtered = sectionCats.filter((c) => c.name.toLowerCase().includes(q));
             if (filtered.length === 0) return null;
           }
+          const isGold = section.isGold;
           return (
             <div key={section.id}>
               <div className="mb-3 flex items-center gap-2">
-                <h2 className={`text-lg font-bold ${section.isGold ? 'text-accent' : 'text-foreground'}`}>
+                {!isGold && <div className="h-5 w-[3px] rounded-full bg-accent" />}
+                {isGold && <div className="h-5 w-[3px] rounded-full bg-[hsl(var(--accent-gold))]" />}
+                <h2 className={`text-lg font-bold ${isGold ? 'text-[hsl(var(--accent-gold))]' : 'text-foreground'}`}>
                   {section.name}
                 </h2>
               </div>
+              {isGold && <div className="mb-3 h-[1.5px] bg-gradient-to-r from-[hsl(var(--accent-gold))] to-transparent" />}
               <div className="grid grid-cols-4 gap-2">
                 {sectionCats.map((cat) => (
                   <button
                     key={cat.id}
                     onClick={() => navigate(`/category/${cat.id}`)}
-                    className={`relative overflow-hidden rounded-xl aspect-square ${
-                      section.isGold ? 'ring-1 ring-accent/40' : ''
-                    }`}
+                    className={`relative overflow-hidden rounded-xl aspect-square border transition-all active:scale-95 ${
+                      isGold ? 'border-[hsl(var(--accent-gold))]/40' : 'border-border'
+                    } hover:brightness-110`}
                   >
                     <img
                       src={cat.image || '/placeholder.svg'}

@@ -27,7 +27,7 @@ const OrderHistory = () => {
         <div className="flex gap-2 mb-4">
           {tabs.map((t) => (
             <button key={t} onClick={() => setActiveTab(t)}
-              className={`rounded-full px-4 py-1.5 text-sm font-medium ${activeTab === t ? 'bg-primary text-primary-foreground' : 'bg-surface text-muted-foreground'}`}>
+              className={`rounded-full px-4 py-1.5 text-sm font-medium ${activeTab === t ? 'bg-accent text-accent-foreground' : 'bg-card text-muted-foreground'}`}>
               {t}
             </button>
           ))}
@@ -36,15 +36,15 @@ const OrderHistory = () => {
         {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20">
             <Package className="h-16 w-16 text-muted-foreground/30 mb-3" />
-            <p className="text-muted-foreground">No orders yet</p>
+            <p className="text-muted-foreground">Abhi tak koi order nahi</p>
           </div>
         ) : (
           <div className="space-y-3">
             {filtered.map((order) => (
-              <div key={order.id} className="rounded-lg bg-surface p-4 space-y-2">
+              <div key={order.id} className="rounded-lg bg-card p-4 space-y-2">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-bold text-primary">{order.id}</p>
+                    <p className="font-bold text-accent">{order.id}</p>
                     <p className="text-xs text-muted-foreground">{new Date(order.createdAt).toLocaleDateString()}</p>
                   </div>
                   <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
@@ -60,7 +60,7 @@ const OrderHistory = () => {
                     Track
                   </button>
                   <button onClick={() => { order.items.forEach((i) => addToCart(i.product)); navigate('/cart'); }}
-                    className="flex flex-1 items-center justify-center gap-1 rounded-lg bg-primary py-2 text-sm font-medium text-primary-foreground">
+                    className="flex flex-1 items-center justify-center gap-1 rounded-lg bg-accent py-2 text-sm font-medium text-accent-foreground">
                     <RotateCcw className="h-3.5 w-3.5" /> Reorder
                   </button>
                 </div>

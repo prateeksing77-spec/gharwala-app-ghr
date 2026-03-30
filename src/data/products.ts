@@ -71,7 +71,7 @@ export const banners = [
 
 export const coupons = [
   { code: 'FIRST50', discount: 50, type: 'flat' as const, minOrder: 200 },
-  { code: 'GHAR10', discount: 10, type: 'percent' as const, minOrder: 300 },
+  { code: 'KIRANA10', discount: 10, type: 'percent' as const, minOrder: 300 },
   { code: 'LOCAL20', discount: 20, type: 'flat' as const, minOrder: 150 },
 ];
 
