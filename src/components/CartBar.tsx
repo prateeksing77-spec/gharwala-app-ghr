@@ -19,17 +19,17 @@ const CartBar = () => {
         >
           <button
             onClick={() => navigate('/cart')}
-            className="flex w-full items-center justify-between rounded-lg bg-primary px-4 py-3 shadow-lg"
+            className="flex w-full items-center justify-between rounded-lg bg-accent px-4 py-3 shadow-lg"
           >
             <div className="flex items-center gap-2">
-              <ShoppingCart className="h-5 w-5 text-primary-foreground" />
-              <span className="font-semibold text-primary-foreground">
+              <ShoppingCart className="h-5 w-5 text-accent-foreground" />
+              <span className="font-semibold text-accent-foreground">
                 {cartCount} item{cartCount > 1 ? 's' : ''}
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="font-bold text-primary-foreground">Rs.{cartTotal}</span>
-              <ArrowRight className="h-5 w-5 text-primary-foreground" />
+              <span className="font-bold text-accent-foreground">Rs.{cartTotal}</span>
+              <ArrowRight className="h-5 w-5 text-accent-foreground" />
             </div>
           </button>
         </motion.div>

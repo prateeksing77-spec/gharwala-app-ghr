@@ -8,7 +8,7 @@ const menuItems = [
   { icon: MapPin, label: 'Saved Addresses', path: '/checkout' },
   { icon: Bell, label: 'Notifications', path: '/notifications' },
   { icon: HelpCircle, label: 'Help & Support', path: null },
-  { icon: Info, label: 'About GharWala', path: null },
+  { icon: Info, label: 'About KiraNey', path: null },
   { icon: FileText, label: 'Terms & Conditions', path: null },
   { icon: Shield, label: 'Privacy Policy', path: null },
 ];
@@ -26,8 +26,8 @@ const Profile = () => {
     <div className="min-h-screen bg-background pb-24">
       <div className="px-4 pt-6 pb-4">
         <div className="flex items-center gap-4">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary">
-            <User className="h-8 w-8 text-primary-foreground" />
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-accent">
+            <User className="h-8 w-8 text-accent-foreground" />
           </div>
           <div>
             <h2 className="text-xl font-bold text-foreground">{userName}</h2>
@@ -41,7 +41,7 @@ const Profile = () => {
           <button
             key={item.label}
             onClick={() => item.path && navigate(item.path)}
-            className="flex w-full items-center justify-between rounded-lg px-4 py-3.5 text-foreground hover:bg-surface transition-colors"
+            className="flex w-full items-center justify-between rounded-lg px-4 py-3.5 text-foreground hover:bg-card transition-colors"
           >
             <div className="flex items-center gap-3">
               <item.icon className="h-5 w-5 text-muted-foreground" />
@@ -52,7 +52,7 @@ const Profile = () => {
         ))}
 
         <button onClick={handleLogout}
-          className="flex w-full items-center gap-3 rounded-lg px-4 py-3.5 text-destructive hover:bg-surface transition-colors mt-4">
+          className="flex w-full items-center gap-3 rounded-lg px-4 py-3.5 text-destructive hover:bg-card transition-colors mt-4">
           <LogOut className="h-5 w-5" />
           <span className="text-sm font-medium">Logout</span>
         </button>

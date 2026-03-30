@@ -13,7 +13,7 @@ const OrderConfirmation = () => {
         animate={{ scale: 1 }}
         transition={{ type: 'spring', damping: 10 }}
       >
-        <CheckCircle className="h-24 w-24 text-primary" />
+        <CheckCircle className="h-24 w-24 text-accent" />
       </motion.div>
 
       <motion.div
@@ -24,7 +24,7 @@ const OrderConfirmation = () => {
       >
         <h1 className="text-2xl font-bold text-foreground">Order Placed!</h1>
         <p className="text-muted-foreground">Your order has been placed successfully</p>
-        <p className="text-lg font-bold text-primary">{orderId}</p>
+        <p className="text-lg font-bold text-accent">{orderId}</p>
         <p className="text-sm text-muted-foreground">Estimated delivery: 30-45 minutes</p>
       </motion.div>
 
@@ -35,11 +35,11 @@ const OrderConfirmation = () => {
         className="mt-8 flex w-full max-w-sm flex-col gap-3"
       >
         <button onClick={() => navigate(`/order-tracking/${orderId}`)}
-          className="flex items-center justify-center gap-2 rounded-lg bg-primary py-3 font-semibold text-primary-foreground">
+          className="flex items-center justify-center gap-2 rounded-lg bg-accent py-3 font-semibold text-accent-foreground">
           Track Order <ArrowRight className="h-5 w-5" />
         </button>
         <button onClick={() => navigate('/home')}
-          className="flex items-center justify-center gap-2 rounded-lg bg-surface py-3 font-semibold text-foreground">
+          className="flex items-center justify-center gap-2 rounded-lg bg-card py-3 font-semibold text-foreground">
           <Home className="h-5 w-5" /> Continue Shopping
         </button>
       </motion.div>

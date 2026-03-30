@@ -14,7 +14,7 @@ const Notifications = () => {
           <button onClick={() => navigate(-1)}><ArrowLeft className="h-5 w-5 text-foreground" /></button>
           <h1 className="text-lg font-bold text-foreground">Notifications</h1>
         </div>
-        <button onClick={markAllRead} className="flex items-center gap-1 text-sm text-primary">
+        <button onClick={markAllRead} className="flex items-center gap-1 text-sm text-accent">
           <CheckCheck className="h-4 w-4" /> Mark all read
         </button>
       </div>
@@ -27,9 +27,9 @@ const Notifications = () => {
           </div>
         ) : (
           notifications.map((n) => (
-            <div key={n.id} className={`rounded-lg p-4 ${n.read ? 'bg-surface' : 'bg-primary/10 border border-primary/20'}`}>
+            <div key={n.id} className={`rounded-lg p-4 border-l-[3px] ${n.read ? 'bg-card border-l-transparent' : 'bg-accent/10 border-l-accent'}`}>
               <div className="flex items-start gap-3">
-                {!n.read && <div className="mt-1.5 h-2 w-2 rounded-full bg-primary flex-shrink-0" />}
+                {!n.read && <div className="mt-1.5 h-2 w-2 rounded-full bg-accent flex-shrink-0" />}
                 <div>
                   <p className="text-sm font-medium text-foreground">{n.title}</p>
                   <p className="text-xs text-muted-foreground mt-0.5">{n.message}</p>

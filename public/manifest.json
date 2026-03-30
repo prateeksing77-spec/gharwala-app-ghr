@@ -1,0 +1,16 @@
+{
+  "name": "KiraNey",
+  "short_name": "KiraNey",
+  "description": "Ghar baithe kirana",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#FF6F00",
+  "background_color": "#0A0F0D",
+  "icons": [
+    {
+      "src": "/placeholder.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    }
+  ]
+}

@@ -32,9 +32,9 @@ const OrderTracking = () => {
       </div>
 
       <div className="px-4 space-y-6">
-        <div className="rounded-lg bg-surface p-4 space-y-1">
+        <div className="rounded-lg bg-card p-4 space-y-1">
           <p className="text-sm text-muted-foreground">Order ID</p>
-          <p className="text-lg font-bold text-primary">{order.id}</p>
+          <p className="text-lg font-bold text-accent">{order.id}</p>
           <p className="text-xs text-muted-foreground">{new Date(order.createdAt).toLocaleString()}</p>
         </div>
 
@@ -47,10 +47,10 @@ const OrderTracking = () => {
             return (
               <div key={step.key} className="flex gap-4">
                 <div className="flex flex-col items-center">
-                  <div className={`flex h-8 w-8 items-center justify-center rounded-full ${completed ? 'bg-primary' : 'bg-surface-elevated'} ${isCurrent ? 'animate-pulse-glow' : ''}`}>
-                    {completed ? <StepIcon className="h-4 w-4 text-primary-foreground" /> : <Circle className="h-4 w-4 text-muted-foreground" />}
+                  <div className={`flex h-8 w-8 items-center justify-center rounded-full ${completed ? 'bg-accent' : 'bg-surface-elevated'} ${isCurrent ? 'animate-pulse' : ''}`}>
+                    {completed ? <StepIcon className="h-4 w-4 text-accent-foreground" /> : <Circle className="h-4 w-4 text-muted-foreground" />}
                   </div>
-                  {i < steps.length - 1 && <div className={`h-8 w-0.5 ${i < currentIndex ? 'bg-primary' : 'bg-border'}`} />}
+                  {i < steps.length - 1 && <div className={`h-8 w-0.5 ${i < currentIndex ? 'bg-accent' : 'bg-border'}`} />}
                 </div>
                 <div className="pb-6">
                   <p className={`text-sm font-medium ${completed ? 'text-foreground' : 'text-muted-foreground'}`}>{step.label}</p>
@@ -61,7 +61,7 @@ const OrderTracking = () => {
         </div>
 
         {/* Order Details */}
-        <div className="rounded-lg bg-surface p-4 space-y-2">
+        <div className="rounded-lg bg-card p-4 space-y-2">
           <h3 className="font-bold text-foreground">Order Details</h3>
           {order.items.map((item) => (
             <div key={item.product.id} className="flex justify-between text-sm">
@@ -76,10 +76,10 @@ const OrderTracking = () => {
         </div>
 
         <div className="flex gap-3">
-          <button className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-primary py-3 font-semibold text-primary-foreground">
+          <button className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-accent py-3 font-semibold text-accent-foreground">
             <Phone className="h-4 w-4" /> Call
           </button>
-          <button className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-surface py-3 font-semibold text-foreground">
+          <button className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-card py-3 font-semibold text-foreground">
             <MessageCircle className="h-4 w-4" /> WhatsApp
           </button>
         </div>

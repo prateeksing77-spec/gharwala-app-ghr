@@ -28,9 +28,9 @@ const App = () => (
       position="top-center"
       toastOptions={{
         style: {
-          background: 'hsl(240 24% 14%)',
-          color: 'hsl(0 0% 100%)',
-          border: '1px solid hsl(240 15% 25%)',
+          background: 'hsl(150 15% 9%)',
+          color: 'hsl(0 0% 96%)',
+          borderLeft: '3px solid hsl(28 100% 50%)',
           borderRadius: '0.75rem',
         },
       }}
