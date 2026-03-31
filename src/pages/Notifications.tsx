@@ -8,30 +8,30 @@ const Notifications = () => {
   const { notifications, markAllRead } = useAppStore();
 
   return (
-    <div className="min-h-screen bg-background pb-24">
-      <div className="sticky top-0 z-30 flex items-center justify-between bg-background/95 backdrop-blur-sm px-4 py-3">
+    <div className="min-h-screen bg-background pb-20">
+      <div className="sticky top-0 z-30 flex items-center justify-between bg-card border-b border-border px-4 py-3">
         <div className="flex items-center gap-3">
           <button onClick={() => navigate(-1)}><ArrowLeft className="h-5 w-5 text-foreground" /></button>
           <h1 className="text-lg font-bold text-foreground">Notifications</h1>
         </div>
-        <button onClick={markAllRead} className="flex items-center gap-1 text-sm text-accent">
+        <button onClick={markAllRead} className="flex items-center gap-1 text-sm font-medium text-primary">
           <CheckCheck className="h-4 w-4" /> Mark all read
         </button>
       </div>
 
-      <div className="px-4 space-y-2">
+      <div className="px-4 pt-3 space-y-2">
         {notifications.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20">
-            <Bell className="h-16 w-16 text-muted-foreground/30 mb-3" />
+            <Bell className="h-16 w-16 text-muted-foreground/20 mb-3" />
             <p className="text-muted-foreground">No notifications</p>
           </div>
         ) : (
           notifications.map((n) => (
-            <div key={n.id} className={`rounded-lg p-4 border-l-[3px] ${n.read ? 'bg-card border-l-transparent' : 'bg-accent/10 border-l-accent'}`}>
+            <div key={n.id} className={`rounded-xl p-4 border ${n.read ? 'bg-card border-border' : 'bg-primary/5 border-primary/20'}`}>
               <div className="flex items-start gap-3">
-                {!n.read && <div className="mt-1.5 h-2 w-2 rounded-full bg-accent flex-shrink-0" />}
+                {!n.read && <div className="mt-1.5 h-2 w-2 rounded-full bg-primary flex-shrink-0" />}
                 <div>
-                  <p className="text-sm font-medium text-foreground">{n.title}</p>
+                  <p className="text-sm font-semibold text-foreground">{n.title}</p>
                   <p className="text-xs text-muted-foreground mt-0.5">{n.message}</p>
                   <p className="text-[10px] text-muted-foreground mt-1">{new Date(n.createdAt).toLocaleString()}</p>
                 </div>

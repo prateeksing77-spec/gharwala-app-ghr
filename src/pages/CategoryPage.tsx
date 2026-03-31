@@ -26,22 +26,20 @@ const CategoryPage = () => {
 
   if (!category) return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background">
-      <Search className="h-16 w-16 text-muted-foreground/30 mb-3" />
-      <p className="text-muted-foreground">Koi product nahi mila</p>
+      <Search className="h-12 w-12 text-muted-foreground/30 mb-2" />
+      <p className="text-muted-foreground">No products found</p>
     </div>
   );
 
-  const subcategories = ['All', ...category.subcategories];
-
   return (
-    <div className="min-h-screen bg-background pb-32">
-      <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm px-4 py-3">
+    <div className="min-h-screen bg-background pb-20">
+      <div className="sticky top-0 z-30 bg-card border-b border-border px-4 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button onClick={() => navigate(-1)}><ArrowLeft className="h-5 w-5 text-foreground" /></button>
             <h1 className="text-lg font-bold text-foreground">{category.name}</h1>
           </div>
-          <button onClick={() => setShowSort(!showSort)} className="relative rounded-lg bg-card p-2">
+          <button onClick={() => setShowSort(!showSort)} className="rounded-lg border border-border p-2">
             <SlidersHorizontal className="h-5 w-5 text-muted-foreground" />
           </button>
         </div>
@@ -50,7 +48,7 @@ const CategoryPage = () => {
           <div className="mt-2 flex gap-2 flex-wrap">
             {(['default', 'low', 'high', 'discount'] as const).map((s) => (
               <button key={s} onClick={() => { setSortBy(s); setShowSort(false); }}
-                className={`rounded-full px-3 py-1 text-xs font-medium ${sortBy === s ? 'bg-accent text-accent-foreground' : 'bg-card text-muted-foreground'}`}>
+                className={`rounded-full px-3 py-1 text-xs font-medium ${sortBy === s ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'}`}>
                 {s === 'default' ? 'Relevant' : s === 'low' ? 'Price: Low' : s === 'high' ? 'Price: High' : 'Discount'}
               </button>
             ))}
@@ -58,25 +56,27 @@ const CategoryPage = () => {
         )}
 
         <div className="mt-3 flex gap-2 overflow-x-auto scrollbar-hide">
-          {subcategories.map((sub) => (
+          {['All', ...category.subcategories].map((sub) => (
             <button key={sub} onClick={() => setActiveSub(sub)}
-              className={`whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-medium ${activeSub === sub ? 'bg-accent text-accent-foreground' : 'bg-card text-muted-foreground'}`}>
+              className={`whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-medium ${activeSub === sub ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'}`}>
               {sub}
             </button>
           ))}
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3 px-4 pt-3">
-        {categoryProducts.map((p) => <ProductCard key={p.id} product={p} />)}
+      <div className="px-4 pt-3">
+        {categoryProducts.length > 0 ? (
+          <div className="grid grid-cols-2 gap-3">
+            {categoryProducts.map((p) => <ProductCard key={p.id} product={p} />)}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center py-20">
+            <Search className="h-12 w-12 text-muted-foreground/30 mb-2" />
+            <p className="text-muted-foreground">No products found</p>
+          </div>
+        )}
       </div>
-      {categoryProducts.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-20">
-          <Search className="h-16 w-16 text-muted-foreground/30 mb-3" />
-          <p className="text-muted-foreground">Koi product nahi mila</p>
-        </div>
-      )}
-
       <CartBar />
       <BottomNav />
     </div>

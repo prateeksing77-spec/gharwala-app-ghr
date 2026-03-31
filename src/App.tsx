@@ -4,7 +4,7 @@ import { useAppStore } from "@/stores/cartStore";
 import Splash from "./pages/Splash";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
-import Categories from "./pages/Categories";
+import Products from "./pages/Products";
 import CategoryPage from "./pages/CategoryPage";
 import ProductDetail from "./pages/ProductDetail";
 import Cart from "./pages/Cart";
@@ -28,10 +28,12 @@ const App = () => (
       position="top-center"
       toastOptions={{
         style: {
-          background: 'hsl(150 15% 9%)',
-          color: 'hsl(0 0% 96%)',
-          borderLeft: '3px solid hsl(28 100% 50%)',
+          background: '#fff',
+          color: '#171717',
+          border: '1px solid #e5e5e5',
+          borderLeft: '3px solid hsl(130, 65%, 20%)',
           borderRadius: '0.75rem',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
         },
       }}
     />
@@ -40,7 +42,7 @@ const App = () => (
         <Route path="/" element={<Splash />} />
         <Route path="/login" element={<Login />} />
         <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
-        <Route path="/categories" element={<ProtectedRoute><Categories /></ProtectedRoute>} />
+        <Route path="/products" element={<ProtectedRoute><Products /></ProtectedRoute>} />
         <Route path="/category/:id" element={<ProtectedRoute><CategoryPage /></ProtectedRoute>} />
         <Route path="/product/:id" element={<ProtectedRoute><ProductDetail /></ProtectedRoute>} />
         <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
