@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, MapPin, Plus, CreditCard, Banknote, Shield, Upload, Image } from 'lucide-react';
+import { ArrowLeft, MapPin, Plus, Banknote, Shield } from 'lucide-react';
 import { useAppStore } from '@/stores/cartStore';
 import { areas } from '@/data/products';
-import { deliverySettings, upiSettings } from '@/data/settings';
+import { deliverySettings } from '@/data/settings';
 import toast from 'react-hot-toast';
 import BottomNav from '@/components/BottomNav';
 
@@ -16,11 +16,9 @@ const Checkout = () => {
   const navigate = useNavigate();
   const { addresses, addAddress, cart, getCartTotal, placeOrder } = useAppStore();
   const [selectedAddress, setSelectedAddress] = useState(addresses[0]?.id || '');
-  const [payment, setPayment] = useState<'cod' | 'upi'>('cod');
   const [showAddForm, setShowAddForm] = useState(addresses.length === 0);
   const [form, setForm] = useState({ name: '', phone: '', house: '', street: '', landmark: '', area: areas[0], pincode: '' });
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [upiScreenshot, setUpiScreenshot] = useState<string | null>(null);
 
   const subtotal = getCartTotal();
   const delivery = subtotal >= deliverySettings.freeDeliveryAbove ? 0 : deliverySettings.deliveryCharge;
@@ -37,38 +35,9 @@ const Checkout = () => {
     return Object.keys(errs).length === 0;
   };
 
-  const handleAddAddress = () => {
-    if (!validateForm()) return;
-    const sanitized = {
-      name: sanitize(form.name).trim(),
-      phone: form.phone,
-      house: sanitize(form.house).trim().slice(0, 200),
-      street: sanitize(form.street).trim().slice(0, 200),
-      landmark: sanitize(form.landmark).trim().slice(0, 200),
-      area: form.area,
-      pincode: form.pincode,
-      isDefault: false,
-    };
-    addAddress(sanitized);
-    setShowAddForm(false);
-    toast.success('Address added');
-  };
-
-  const handleScreenshot = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => setUpiScreenshot(reader.result as string);
-      reader.readAsDataURL(file);
-    }
-  };
-
   const handlePlaceOrder = () => {
     const addr = addresses.find((a) => a.id === selectedAddress);
-    if (!addr && !showAddForm) {
-      toast.error('Select a delivery address');
-      return;
-    }
+    if (!addr && !showAddForm) { toast.error('Select a delivery address'); return; }
     if (cart.length === 0) { toast.error('Cart is empty'); return; }
     if (subtotal < deliverySettings.minOrderAmount) { toast.error(`Minimum order Rs.${deliverySettings.minOrderAmount}`); return; }
 
@@ -76,20 +45,15 @@ const Checkout = () => {
     if (!finalAddr && showAddForm) {
       if (!validateForm()) return;
       const sanitized = {
-        name: sanitize(form.name).trim(),
-        phone: form.phone,
-        house: sanitize(form.house).trim().slice(0, 200),
-        street: sanitize(form.street).trim().slice(0, 200),
-        landmark: sanitize(form.landmark).trim().slice(0, 200),
-        area: form.area,
-        pincode: form.pincode,
-        isDefault: true,
+        name: sanitize(form.name).trim(), phone: form.phone,
+        house: sanitize(form.house).trim().slice(0, 200), street: sanitize(form.street).trim().slice(0, 200),
+        landmark: sanitize(form.landmark).trim().slice(0, 200), area: form.area, pincode: form.pincode, isDefault: true,
       };
       addAddress(sanitized);
       finalAddr = { ...sanitized, id: 'temp' };
     }
 
-    const orderId = placeOrder(finalAddr!, payment);
+    const orderId = placeOrder(finalAddr!, 'cod');
     toast.success('Order placed successfully!');
     navigate(`/order-confirmation/${orderId}`, { replace: true });
   };
@@ -105,9 +69,8 @@ const Checkout = () => {
           if (errors[field]) setErrors({ ...errors, [field]: '' });
         }}
         placeholder={label + (field === 'landmark' ? ' (optional)' : ' *')}
-        className={`w-full rounded-lg border bg-background px-3 py-2.5 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-accent ${errors[field] ? 'border-destructive' : 'border-border'}`}
-        type={type}
-        maxLength={field === 'phone' ? 10 : 200}
+        className={`w-full rounded-xl border bg-background px-3 py-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 ${errors[field] ? 'border-destructive' : 'border-border'}`}
+        type={type} maxLength={field === 'phone' ? 10 : 200}
       />
       {errors[field] && <p className="mt-0.5 text-xs text-destructive">{errors[field]}</p>}
     </div>
@@ -115,18 +78,18 @@ const Checkout = () => {
 
   return (
     <div className="min-h-screen bg-background pb-32">
-      <div className="sticky top-0 z-30 flex items-center gap-3 bg-background/95 backdrop-blur-sm px-4 py-3">
+      <div className="sticky top-0 z-30 flex items-center gap-3 bg-card border-b border-border px-4 py-3">
         <button onClick={() => navigate(-1)}><ArrowLeft className="h-5 w-5 text-foreground" /></button>
         <h1 className="text-lg font-bold text-foreground">Checkout</h1>
       </div>
 
-      <div className="px-4 space-y-4">
+      <div className="px-4 pt-4 space-y-4">
         {/* Addresses */}
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <h3 className="font-bold text-foreground flex items-center gap-2"><MapPin className="h-4 w-4" /> Delivery Address</h3>
             {addresses.length > 0 && (
-              <button onClick={() => setShowAddForm(!showAddForm)} className="text-sm text-accent flex items-center gap-1">
+              <button onClick={() => setShowAddForm(!showAddForm)} className="text-sm text-primary font-medium flex items-center gap-1">
                 <Plus className="h-3 w-3" /> Add New
               </button>
             )}
@@ -134,84 +97,52 @@ const Checkout = () => {
 
           {addresses.map((addr) => (
             <button key={addr.id} onClick={() => { setSelectedAddress(addr.id); setShowAddForm(false); }}
-              className={`w-full rounded-lg border p-3 text-left ${selectedAddress === addr.id && !showAddForm ? 'border-accent bg-accent/10' : 'border-border bg-card'}`}>
+              className={`w-full rounded-xl border p-3 text-left transition-colors ${selectedAddress === addr.id && !showAddForm ? 'border-primary bg-primary/5' : 'border-border bg-card'}`}>
               <p className="text-sm font-medium text-foreground">{addr.name}</p>
               <p className="text-xs text-muted-foreground">{addr.house}, {addr.street}, {addr.area} - {addr.pincode}</p>
             </button>
           ))}
 
           {showAddForm && (
-            <div className="space-y-3 rounded-lg border border-border bg-card p-4">
+            <div className="space-y-3 rounded-xl border border-border bg-card p-4">
               {formField('name', 'Name')}
               {formField('phone', 'Phone', 'tel')}
               {formField('house', 'House / Flat')}
               {formField('street', 'Street / Mohalla')}
               {formField('landmark', 'Landmark')}
-              <div>
-                <select value={form.area} onChange={(e) => setForm({ ...form, area: e.target.value })}
-                  className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm text-foreground outline-none focus:border-accent">
-                  {areas.map((a) => <option key={a} value={a}>{a}</option>)}
-                </select>
-              </div>
+              <select value={form.area} onChange={(e) => setForm({ ...form, area: e.target.value })}
+                className="w-full rounded-xl border border-border bg-background px-3 py-3 text-sm text-foreground outline-none focus:border-primary">
+                {areas.map((a) => <option key={a} value={a}>{a}</option>)}
+              </select>
               <div>
                 <input value={form.pincode} onChange={(e) => { setForm({ ...form, pincode: e.target.value.replace(/\D/g, '').slice(0, 6) }); if (errors.pincode) setErrors({ ...errors, pincode: '' }); }}
                   placeholder="PIN Code *" type="tel" maxLength={6}
-                  className={`w-full rounded-lg border bg-background px-3 py-2.5 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-accent ${errors.pincode ? 'border-destructive' : 'border-border'}`} />
+                  className={`w-full rounded-xl border bg-background px-3 py-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-primary ${errors.pincode ? 'border-destructive' : 'border-border'}`} />
                 {errors.pincode && <p className="mt-0.5 text-xs text-destructive">{errors.pincode}</p>}
               </div>
-              {addresses.length === 0 ? null : (
-                <button onClick={handleAddAddress} className="w-full rounded-lg bg-accent py-2.5 text-sm font-semibold text-accent-foreground">Save Address</button>
-              )}
             </div>
           )}
         </div>
 
-        {/* Payment */}
+        {/* Payment - COD only */}
         <div className="space-y-2">
-          <h3 className="font-bold text-foreground flex items-center gap-2"><CreditCard className="h-4 w-4" /> Payment Method</h3>
-          <button onClick={() => setPayment('cod')}
-            className={`flex w-full items-center gap-3 rounded-lg border p-3 ${payment === 'cod' ? 'border-accent bg-accent/10' : 'border-border bg-card'}`}>
-            <Banknote className="h-5 w-5 text-accent" />
-            <span className="text-sm font-medium text-foreground">Cash on Delivery</span>
-          </button>
-          <button onClick={() => setPayment('upi')}
-            className={`flex w-full items-center gap-3 rounded-lg border p-3 ${payment === 'upi' ? 'border-accent bg-accent/10' : 'border-border bg-card'}`}>
-            <CreditCard className="h-5 w-5 text-accent" />
-            <span className="text-sm font-medium text-foreground">UPI Payment</span>
-          </button>
-
-          {payment === 'upi' && (
-            <div className="rounded-lg border border-border bg-card p-4 space-y-3">
-              <div className="text-center">
-                <p className="text-sm text-muted-foreground">UPI ID</p>
-                <p className="text-base font-bold text-accent">{upiSettings.upiId}</p>
-              </div>
-              <div className="flex justify-center">
-                <div className="h-32 w-32 rounded-lg bg-foreground/10 flex items-center justify-center">
-                  <Image className="h-10 w-10 text-muted-foreground" />
-                </div>
-              </div>
-              <label className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-accent py-2.5 text-sm font-medium text-accent">
-                <Upload className="h-4 w-4" />
-                Upload Payment Screenshot
-                <input type="file" accept="image/*" onChange={handleScreenshot} className="hidden" />
-              </label>
-              {upiScreenshot && (
-                <img src={upiScreenshot} alt="Payment screenshot" className="mx-auto h-24 rounded-lg object-contain" />
-              )}
+          <h3 className="font-bold text-foreground flex items-center gap-2"><Banknote className="h-4 w-4" /> Payment Method</h3>
+          <div className="flex items-center gap-3 rounded-xl border-2 border-primary bg-primary/5 p-3">
+            <div className="h-4 w-4 rounded-full border-2 border-primary flex items-center justify-center">
+              <div className="h-2 w-2 rounded-full bg-primary" />
             </div>
-          )}
+            <span className="text-sm font-medium text-foreground">Cash on Delivery</span>
+          </div>
         </div>
 
         {/* Summary */}
-        <div className="space-y-2 rounded-lg bg-card p-4">
+        <div className="space-y-2 rounded-xl bg-card border border-border p-4">
           <h3 className="font-bold text-foreground">Order Summary</h3>
           <div className="flex justify-between text-sm"><span className="text-muted-foreground">Items ({cart.length})</span><span className="text-foreground">Rs.{subtotal}</span></div>
-          <div className="flex justify-between text-sm"><span className="text-muted-foreground">Delivery</span><span className={delivery === 0 ? 'text-primary' : 'text-foreground'}>{delivery === 0 ? 'FREE' : `Rs.${delivery}`}</span></div>
+          <div className="flex justify-between text-sm"><span className="text-muted-foreground">Delivery</span><span className={delivery === 0 ? 'text-primary font-medium' : 'text-foreground'}>{delivery === 0 ? 'FREE' : `Rs.${delivery}`}</span></div>
           <div className="border-t border-border pt-2 flex justify-between font-bold"><span className="text-foreground">Total</span><span className="text-foreground">Rs.{total}</span></div>
         </div>
 
-        {/* Secured footer */}
         <div className="flex items-center justify-center gap-1.5 py-2">
           <Shield className="h-3.5 w-3.5 text-muted-foreground" />
           <span className="text-xs text-muted-foreground">Secured by KiraNey</span>
@@ -219,7 +150,7 @@ const Checkout = () => {
       </div>
 
       <div className="fixed bottom-16 left-0 right-0 z-40 px-4 pb-2">
-        <button onClick={handlePlaceOrder} className="w-full rounded-lg bg-accent py-3.5 font-bold text-accent-foreground">
+        <button onClick={handlePlaceOrder} className="w-full rounded-xl bg-primary py-3.5 font-bold text-primary-foreground shadow-lg shadow-primary/20">
           Place Order - Rs.{total}
         </button>
       </div>

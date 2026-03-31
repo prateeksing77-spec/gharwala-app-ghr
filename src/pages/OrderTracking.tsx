@@ -25,20 +25,19 @@ const OrderTracking = () => {
   const currentIndex = steps.findIndex((s) => s.key === order.status);
 
   return (
-    <div className="min-h-screen bg-background pb-24">
-      <div className="sticky top-0 z-30 flex items-center gap-3 bg-background/95 backdrop-blur-sm px-4 py-3">
+    <div className="min-h-screen bg-background pb-20">
+      <div className="sticky top-0 z-30 flex items-center gap-3 bg-card border-b border-border px-4 py-3">
         <button onClick={() => navigate(-1)}><ArrowLeft className="h-5 w-5 text-foreground" /></button>
         <h1 className="text-lg font-bold text-foreground">Track Order</h1>
       </div>
 
-      <div className="px-4 space-y-6">
-        <div className="rounded-lg bg-card p-4 space-y-1">
+      <div className="px-4 pt-4 space-y-6">
+        <div className="rounded-xl bg-card border border-border p-4 space-y-1">
           <p className="text-sm text-muted-foreground">Order ID</p>
-          <p className="text-lg font-bold text-accent">{order.id}</p>
+          <p className="text-lg font-bold text-primary">{order.id}</p>
           <p className="text-xs text-muted-foreground">{new Date(order.createdAt).toLocaleString()}</p>
         </div>
 
-        {/* Stepper */}
         <div className="space-y-0">
           {steps.map((step, i) => {
             const completed = i <= currentIndex;
@@ -47,10 +46,10 @@ const OrderTracking = () => {
             return (
               <div key={step.key} className="flex gap-4">
                 <div className="flex flex-col items-center">
-                  <div className={`flex h-8 w-8 items-center justify-center rounded-full ${completed ? 'bg-accent' : 'bg-surface-elevated'} ${isCurrent ? 'animate-pulse' : ''}`}>
-                    {completed ? <StepIcon className="h-4 w-4 text-accent-foreground" /> : <Circle className="h-4 w-4 text-muted-foreground" />}
+                  <div className={`flex h-8 w-8 items-center justify-center rounded-full ${completed ? 'bg-primary' : 'bg-secondary'} ${isCurrent ? 'animate-pulse' : ''}`}>
+                    {completed ? <StepIcon className="h-4 w-4 text-primary-foreground" /> : <Circle className="h-4 w-4 text-muted-foreground" />}
                   </div>
-                  {i < steps.length - 1 && <div className={`h-8 w-0.5 ${i < currentIndex ? 'bg-accent' : 'bg-border'}`} />}
+                  {i < steps.length - 1 && <div className={`h-8 w-0.5 ${i < currentIndex ? 'bg-primary' : 'bg-border'}`} />}
                 </div>
                 <div className="pb-6">
                   <p className={`text-sm font-medium ${completed ? 'text-foreground' : 'text-muted-foreground'}`}>{step.label}</p>
@@ -60,8 +59,7 @@ const OrderTracking = () => {
           })}
         </div>
 
-        {/* Order Details */}
-        <div className="rounded-lg bg-card p-4 space-y-2">
+        <div className="rounded-xl bg-card border border-border p-4 space-y-2">
           <h3 className="font-bold text-foreground">Order Details</h3>
           {order.items.map((item) => (
             <div key={item.product.id} className="flex justify-between text-sm">
@@ -70,16 +68,15 @@ const OrderTracking = () => {
             </div>
           ))}
           <div className="border-t border-border pt-2 flex justify-between font-bold">
-            <span className="text-foreground">Total</span>
-            <span className="text-foreground">Rs.{order.total}</span>
+            <span className="text-foreground">Total</span><span className="text-foreground">Rs.{order.total}</span>
           </div>
         </div>
 
         <div className="flex gap-3">
-          <button className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-accent py-3 font-semibold text-accent-foreground">
+          <button className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-primary py-3 font-semibold text-primary-foreground">
             <Phone className="h-4 w-4" /> Call
           </button>
-          <button className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-card py-3 font-semibold text-foreground">
+          <button className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-border py-3 font-semibold text-foreground">
             <MessageCircle className="h-4 w-4" /> WhatsApp
           </button>
         </div>

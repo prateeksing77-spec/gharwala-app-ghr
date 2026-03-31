@@ -14,12 +14,12 @@ const Splash = () => {
   }, [navigate]);
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-background via-[hsl(125,30%,8%)] to-background">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-card">
       <motion.div
         initial={{ scale: 0.5, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.6, ease: 'easeOut' }}
-        className="flex flex-col items-center gap-4"
+        className="flex flex-col items-center gap-3"
       >
         <KiraNeyLogo size={120} />
         <motion.h1
@@ -34,9 +34,9 @@ const Splash = () => {
           initial={{ y: 10, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.6 }}
-          className="text-muted-foreground text-lg"
+          className="text-muted-foreground text-base font-medium"
         >
-          Ghar baithe kirana
+          Fast &bull; Fresh &bull; Reliable
         </motion.p>
       </motion.div>
 
@@ -44,10 +44,10 @@ const Splash = () => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.8 }}
-        className="mt-12 w-48 h-1 rounded-full bg-surface overflow-hidden"
+        className="mt-12 w-48 h-1.5 rounded-full bg-secondary overflow-hidden"
       >
         <div
-          className="h-full rounded-full bg-accent transition-all duration-100"
+          className="h-full rounded-full bg-primary transition-all duration-100"
           style={{ width: `${progress}%` }}
         />
       </motion.div>

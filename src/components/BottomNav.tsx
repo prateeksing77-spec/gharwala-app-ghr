@@ -1,12 +1,12 @@
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, LayoutGrid, ShoppingCart, User } from 'lucide-react';
+import { Home, ShoppingBag, ShoppingCart, ClipboardList } from 'lucide-react';
 import { useAppStore } from '@/stores/cartStore';
 
 const tabs = [
   { path: '/home', icon: Home, label: 'Home' },
-  { path: '/categories', icon: LayoutGrid, label: 'Categories' },
+  { path: '/products', icon: ShoppingBag, label: 'Products' },
   { path: '/cart', icon: ShoppingCart, label: 'Cart' },
-  { path: '/profile', icon: User, label: 'Profile' },
+  { path: '/orders', icon: ClipboardList, label: 'Orders' },
 ];
 
 const BottomNav = () => {
@@ -15,15 +15,15 @@ const BottomNav = () => {
   const cartCount = useAppStore((s) => s.getCartCount());
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-surface">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
       <div className="mx-auto flex max-w-lg items-center justify-around py-2">
         {tabs.map((tab) => {
-          const active = pathname === tab.path || (tab.path === '/categories' && pathname.startsWith('/category'));
+          const active = pathname === tab.path || (tab.path === '/products' && pathname.startsWith('/category')) || (tab.path === '/products' && pathname.startsWith('/product'));
           return (
             <button
               key={tab.path}
               onClick={() => navigate(tab.path)}
-              className={`relative flex flex-col items-center gap-0.5 px-3 py-1 text-xs transition-colors ${active ? 'text-accent' : 'text-muted-foreground'}`}
+              className={`relative flex flex-col items-center gap-0.5 px-3 py-1 text-xs transition-colors ${active ? 'text-primary' : 'text-muted-foreground'}`}
             >
               <tab.icon className="h-5 w-5" />
               {tab.label === 'Cart' && cartCount > 0 && (
@@ -31,7 +31,7 @@ const BottomNav = () => {
                   {cartCount}
                 </span>
               )}
-              <span>{tab.label}</span>
+              <span className={`text-[11px] ${active ? 'font-semibold' : 'font-medium'}`}>{tab.label}</span>
             </button>
           );
         })}

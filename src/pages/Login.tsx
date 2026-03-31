@@ -23,22 +23,13 @@ const Login = () => {
   const validatePhone = (value: string) => /^[6-9]\d{9}$/.test(value);
 
   const handleSendOtp = () => {
-    if (otpCooldown > 0) {
-      toast.error(`Please wait ${otpCooldown} seconds`);
-      return;
-    }
-    if (!validatePhone(phone)) {
-      toast.error('Enter a valid 10-digit phone number starting with 6-9');
-      return;
-    }
+    if (otpCooldown > 0) { toast.error(`Please wait ${otpCooldown} seconds`); return; }
+    if (!validatePhone(phone)) { toast.error('Enter a valid 10-digit phone number'); return; }
     setOtpSent(true);
     toast.success('OTP sent to +91 ' + phone);
     setOtpCooldown(30);
     const interval = setInterval(() => {
-      setOtpCooldown((prev) => {
-        if (prev <= 1) { clearInterval(interval); return 0; }
-        return prev - 1;
-      });
+      setOtpCooldown((prev) => { if (prev <= 1) { clearInterval(interval); return 0; } return prev - 1; });
     }, 1000);
   };
 
@@ -47,64 +38,39 @@ const Login = () => {
     const newOtp = [...otp];
     newOtp[index] = value;
     setOtp(newOtp);
-    if (value && index < 3) {
-      const next = document.getElementById(`otp-${index + 1}`);
-      next?.focus();
-    }
+    if (value && index < 3) document.getElementById(`otp-${index + 1}`)?.focus();
   };
 
   const handleVerify = () => {
-    const code = otp.join('');
-    if (code.length !== 4) {
-      toast.error('Enter complete OTP');
-      return;
-    }
+    if (otp.join('').length !== 4) { toast.error('Enter complete OTP'); return; }
     setLoggedIn(phone);
     toast.success('Welcome to KiraNey!');
     navigate('/home', { replace: true });
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-6">
-      <motion.div
-        initial={{ y: -30, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        className="mb-10 flex flex-col items-center gap-3"
-      >
+    <div className="flex min-h-screen flex-col items-center justify-center bg-card px-6">
+      <motion.div initial={{ y: -30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} className="mb-10 flex flex-col items-center gap-3">
         <KiraNeyLogo size={80} />
         <h1 className="text-3xl font-bold text-foreground">KiraNey</h1>
-        <p className="text-muted-foreground">Ghar baithe kirana</p>
+        <p className="text-muted-foreground font-medium">Fast &bull; Fresh &bull; Reliable</p>
       </motion.div>
 
-      <motion.div
-        initial={{ y: 30, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.2 }}
-        className="w-full max-w-sm space-y-6"
-      >
+      <motion.div initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 }} className="w-full max-w-sm space-y-6">
         {!otpSent ? (
           <>
             <div className="space-y-2">
-              <label className="text-sm text-muted-foreground">Phone Number</label>
-              <div className="flex items-center gap-2 rounded-lg border border-border bg-surface p-3">
+              <label className="text-sm font-medium text-foreground">Phone Number</label>
+              <div className="flex items-center gap-2 rounded-xl border border-border bg-background p-3.5">
                 <Phone className="h-5 w-5 text-muted-foreground" />
-                <span className="text-muted-foreground">+91</span>
-                <input
-                  type="tel"
-                  maxLength={10}
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
-                  placeholder="Enter phone number"
-                  className="flex-1 bg-transparent text-foreground outline-none placeholder:text-muted-foreground"
-                />
+                <span className="text-muted-foreground font-medium">+91</span>
+                <input type="tel" maxLength={10} value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, ''))}
+                  placeholder="Enter phone number" className="flex-1 bg-transparent text-foreground outline-none placeholder:text-muted-foreground" />
               </div>
             </div>
-            <button
-              onClick={handleSendOtp}
-              className="flex w-full items-center justify-center gap-2 rounded-lg bg-accent p-3.5 font-semibold text-accent-foreground transition-opacity hover:opacity-90"
-            >
-              Send OTP
-              <ArrowRight className="h-5 w-5" />
+            <button onClick={handleSendOtp}
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary p-4 font-semibold text-primary-foreground transition-opacity hover:opacity-90">
+              Send OTP <ArrowRight className="h-5 w-5" />
             </button>
           </>
         ) : (
@@ -113,37 +79,21 @@ const Login = () => {
               <label className="text-sm text-muted-foreground">Enter OTP sent to +91 {phone}</label>
               <div className="flex justify-center gap-3">
                 {otp.map((digit, i) => (
-                  <input
-                    key={i}
-                    id={`otp-${i}`}
-                    type="tel"
-                    maxLength={1}
-                    value={digit}
+                  <input key={i} id={`otp-${i}`} type="tel" maxLength={1} value={digit}
                     onChange={(e) => handleOtpChange(i, e.target.value.replace(/\D/g, ''))}
-                    className="h-14 w-14 rounded-lg border border-border bg-surface text-center text-2xl font-bold text-foreground outline-none focus:border-accent"
-                  />
+                    className="h-14 w-14 rounded-xl border border-border bg-background text-center text-2xl font-bold text-foreground outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" />
                 ))}
               </div>
             </div>
-            <button
-              onClick={handleVerify}
-              className="flex w-full items-center justify-center gap-2 rounded-lg bg-accent p-3.5 font-semibold text-accent-foreground transition-opacity hover:opacity-90"
-            >
-              Verify OTP
-              <ArrowRight className="h-5 w-5" />
+            <button onClick={handleVerify}
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary p-4 font-semibold text-primary-foreground">
+              Verify OTP <ArrowRight className="h-5 w-5" />
             </button>
-            <button
-              onClick={() => setOtpSent(false)}
-              className="w-full text-center text-sm text-muted-foreground"
-            >
-              Change number
-            </button>
+            <button onClick={() => setOtpSent(false)} className="w-full text-center text-sm text-muted-foreground">Change number</button>
             {otpCooldown > 0 ? (
               <p className="text-center text-xs text-muted-foreground">Resend OTP in {otpCooldown}s</p>
             ) : (
-              <button onClick={handleSendOtp} className="w-full text-center text-sm text-accent">
-                Resend OTP
-              </button>
+              <button onClick={handleSendOtp} className="w-full text-center text-sm font-medium text-primary">Resend OTP</button>
             )}
           </>
         )}
