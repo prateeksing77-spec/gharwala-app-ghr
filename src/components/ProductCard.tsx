@@ -1,83 +1,35 @@
-import { Minus, Plus } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Plus, Minus } from 'lucide-react';
 import { Product } from '@/types';
 import { useAppStore } from '@/stores/cartStore';
-import { motion } from 'framer-motion';
-import toast from 'react-hot-toast';
 
 const ProductCard = ({ product }: { product: Product }) => {
-  const navigate = useNavigate();
   const { cart, addToCart, updateQuantity } = useAppStore();
   const cartItem = cart.find((i) => i.product.id === product.id);
-  const discount = product.mrp > product.price ? Math.round(((product.mrp - product.price) / product.mrp) * 100) : 0;
-
-  const handleAdd = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    addToCart(product);
-    toast.success(`${product.name} added`);
-  };
+  const qty = cartItem?.quantity || 0;
 
   return (
-    <motion.div
-      whileTap={{ scale: 0.97 }}
-      onClick={() => navigate(`/product/${product.id}`)}
-      className="relative flex flex-col overflow-hidden rounded-xl border border-border bg-card cursor-pointer shadow-sm hover:shadow-md transition-shadow"
-    >
-      {/* Badges */}
-      <div className="absolute left-1.5 top-1.5 z-10 flex flex-col gap-1">
-        {discount > 0 && (
-          <span className="rounded bg-accent px-1.5 py-0.5 text-[9px] font-bold text-accent-foreground">
-            {discount}% OFF
-          </span>
-        )}
-        {product.isLocal && (
-          <span className="rounded bg-primary px-1.5 py-0.5 text-[9px] font-bold text-primary-foreground">LOCAL</span>
-        )}
-        {product.isFarmFresh && (
-          <span className="rounded bg-primary/80 px-1.5 py-0.5 text-[9px] font-bold text-primary-foreground">FARM FRESH</span>
-        )}
+    <div className="rounded-xl border border-border bg-card p-3 flex flex-col">
+      <div className="aspect-square w-full rounded-lg bg-muted overflow-hidden mb-2">
+        <img src={product.image} alt={product.name} className="h-full w-full object-cover" loading="lazy" />
       </div>
-
-      {/* Image */}
-      <div className="flex h-[140px] items-center justify-center bg-secondary p-2">
-        <img src={product.image} alt={product.name} className="h-full w-full object-cover rounded-lg" loading="lazy" />
-      </div>
-
-      {/* Info */}
-      <div className="flex flex-1 flex-col justify-between p-3">
-        <div>
-          <p className="text-xs font-semibold text-foreground line-clamp-2 leading-tight">{product.name}</p>
-          <p className="mt-0.5 text-[10px] text-muted-foreground">{product.weight}</p>
-        </div>
-        <div className="mt-2 flex items-center justify-between">
-          <div>
-            <span className="text-sm font-bold text-primary">Rs.{product.price}</span>
-            {discount > 0 && (
-              <span className="ml-1 text-[10px] text-muted-foreground line-through">Rs.{product.mrp}</span>
-            )}
+      <p className="text-xs text-muted-foreground">{product.brand}</p>
+      <h3 className="text-sm font-semibold text-foreground line-clamp-2 leading-tight mt-0.5">{product.name}</h3>
+      <p className="text-xs text-muted-foreground mt-0.5">{product.unit}</p>
+      <div className="flex items-center justify-between mt-auto pt-2">
+        <span className="text-base font-bold text-primary">₹{product.price}</span>
+        {qty === 0 ? (
+          <button onClick={() => addToCart(product)} className="flex items-center gap-1 rounded-lg border-2 border-secondary bg-secondary/10 px-3 py-1.5 text-sm font-semibold text-secondary transition-colors hover:bg-secondary hover:text-secondary-foreground">
+            ADD
+          </button>
+        ) : (
+          <div className="flex items-center gap-2 rounded-lg bg-primary px-2 py-1">
+            <button onClick={() => updateQuantity(product.id, qty - 1)} className="text-primary-foreground"><Minus className="h-4 w-4" /></button>
+            <span className="min-w-[16px] text-center text-sm font-bold text-primary-foreground">{qty}</span>
+            <button onClick={() => updateQuantity(product.id, qty + 1)} className="text-primary-foreground"><Plus className="h-4 w-4" /></button>
           </div>
-          {!cartItem ? (
-            <motion.button
-              whileTap={{ scale: 1.15 }}
-              onClick={handleAdd}
-              className="rounded-lg border-2 border-primary px-3 py-1 text-xs font-bold text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
-            >
-              ADD
-            </motion.button>
-          ) : (
-            <div className="flex items-center gap-1.5 rounded-lg bg-primary px-2 py-1">
-              <button onClick={(e) => { e.stopPropagation(); updateQuantity(product.id, cartItem.quantity - 1); }}>
-                <Minus className="h-3.5 w-3.5 text-primary-foreground" />
-              </button>
-              <span className="min-w-[14px] text-center text-xs font-bold text-primary-foreground">{cartItem.quantity}</span>
-              <button onClick={(e) => { e.stopPropagation(); updateQuantity(product.id, cartItem.quantity + 1); }}>
-                <Plus className="h-3.5 w-3.5 text-primary-foreground" />
-              </button>
-            </div>
-          )}
-        </div>
+        )}
       </div>
-    </motion.div>
+    </div>
   );
 };
 

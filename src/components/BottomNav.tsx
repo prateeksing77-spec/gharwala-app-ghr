@@ -15,10 +15,10 @@ const BottomNav = () => {
   const cartCount = useAppStore((s) => s.getCartCount());
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card">
       <div className="mx-auto flex max-w-lg items-center justify-around py-2">
         {tabs.map((tab) => {
-          const active = pathname === tab.path || (tab.path === '/products' && pathname.startsWith('/category')) || (tab.path === '/products' && pathname.startsWith('/product'));
+          const active = pathname === tab.path || (tab.path === '/products' && pathname.startsWith('/category'));
           return (
             <button
               key={tab.path}
@@ -27,7 +27,7 @@ const BottomNav = () => {
             >
               <tab.icon className="h-5 w-5" />
               {tab.label === 'Cart' && cartCount > 0 && (
-                <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-accent text-[10px] font-bold text-accent-foreground">
+                <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
                   {cartCount}
                 </span>
               )}

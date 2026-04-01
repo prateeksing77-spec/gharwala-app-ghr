@@ -1,160 +1,127 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, MapPin, Plus, Banknote, Shield } from 'lucide-react';
+import { ArrowLeft, CheckCircle } from 'lucide-react';
 import { useAppStore } from '@/stores/cartStore';
-import { areas } from '@/data/products';
-import { deliverySettings } from '@/data/settings';
-import toast from 'react-hot-toast';
-import BottomNav from '@/components/BottomNav';
-
-const sanitize = (v: string) => v.replace(/<[^>]*>/g, '').replace(/[<>"'&]/g, '');
-const validatePhone = (v: string) => /^[6-9]\d{9}$/.test(v);
-const validatePincode = (v: string) => /^\d{6}$/.test(v);
-const validateName = (v: string) => /^[a-zA-Z\s]{1,50}$/.test(v.trim());
 
 const Checkout = () => {
   const navigate = useNavigate();
-  const { addresses, addAddress, cart, getCartTotal, placeOrder } = useAppStore();
-  const [selectedAddress, setSelectedAddress] = useState(addresses[0]?.id || '');
-  const [showAddForm, setShowAddForm] = useState(addresses.length === 0);
-  const [form, setForm] = useState({ name: '', phone: '', house: '', street: '', landmark: '', area: areas[0], pincode: '' });
+  const { cart, getCartTotal, placeOrder } = useAppStore();
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [house, setHouse] = useState('');
+  const [street, setStreet] = useState('');
+  const [area, setArea] = useState('');
+  const [pincode, setPincode] = useState('');
+  const [placed, setPlaced] = useState(false);
+  const [orderId, setOrderId] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const subtotal = getCartTotal();
-  const delivery = subtotal >= deliverySettings.freeDeliveryAbove ? 0 : deliverySettings.deliveryCharge;
+  const delivery = subtotal >= 199 ? 0 : 30;
   const total = subtotal + delivery;
 
-  const validateForm = () => {
-    const errs: Record<string, string> = {};
-    if (!validateName(form.name)) errs.name = 'Only letters and spaces, max 50 chars';
-    if (!validatePhone(form.phone)) errs.phone = 'Valid 10-digit number starting with 6-9';
-    if (!sanitize(form.house).trim()) errs.house = 'Required';
-    if (!sanitize(form.street).trim()) errs.street = 'Required';
-    if (!validatePincode(form.pincode)) errs.pincode = 'Valid 6-digit PIN code';
-    setErrors(errs);
-    return Object.keys(errs).length === 0;
+  const validate = () => {
+    const e: Record<string, string> = {};
+    if (!name.trim()) e.name = 'Required';
+    if (!/^[6-9]\d{9}$/.test(phone)) e.phone = 'Enter valid 10-digit phone';
+    if (!house.trim()) e.house = 'Required';
+    if (!street.trim()) e.street = 'Required';
+    if (!area) e.area = 'Select area';
+    if (!/^\d{6}$/.test(pincode)) e.pincode = 'Enter valid 6-digit PIN';
+    setErrors(e);
+    return Object.keys(e).length === 0;
   };
 
   const handlePlaceOrder = () => {
-    const addr = addresses.find((a) => a.id === selectedAddress);
-    if (!addr && !showAddForm) { toast.error('Select a delivery address'); return; }
-    if (cart.length === 0) { toast.error('Cart is empty'); return; }
-    if (subtotal < deliverySettings.minOrderAmount) { toast.error(`Minimum order Rs.${deliverySettings.minOrderAmount}`); return; }
-
-    let finalAddr = addr;
-    if (!finalAddr && showAddForm) {
-      if (!validateForm()) return;
-      const sanitized = {
-        name: sanitize(form.name).trim(), phone: form.phone,
-        house: sanitize(form.house).trim().slice(0, 200), street: sanitize(form.street).trim().slice(0, 200),
-        landmark: sanitize(form.landmark).trim().slice(0, 200), area: form.area, pincode: form.pincode, isDefault: true,
-      };
-      addAddress(sanitized);
-      finalAddr = { ...sanitized, id: 'temp' };
-    }
-
-    const orderId = placeOrder(finalAddr!, 'cod');
-    toast.success('Order placed successfully!');
-    navigate(`/order-confirmation/${orderId}`, { replace: true });
+    if (!validate()) return;
+    const id = placeOrder({ id: '', name, phone, house, street, area, pincode });
+    setOrderId(id);
+    setPlaced(true);
   };
 
-  const formField = (field: 'name' | 'phone' | 'house' | 'street' | 'landmark', label: string, type = 'text') => (
-    <div key={field}>
-      <input value={form[field]}
-        onChange={(e) => {
-          let val = e.target.value;
-          if (field === 'phone') val = val.replace(/\D/g, '').slice(0, 10);
-          else val = val.slice(0, 200);
-          setForm({ ...form, [field]: val });
-          if (errors[field]) setErrors({ ...errors, [field]: '' });
-        }}
-        placeholder={label + (field === 'landmark' ? ' (optional)' : ' *')}
-        className={`w-full rounded-xl border bg-background px-3 py-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20 ${errors[field] ? 'border-destructive' : 'border-border'}`}
-        type={type} maxLength={field === 'phone' ? 10 : 200}
-      />
-      {errors[field] && <p className="mt-0.5 text-xs text-destructive">{errors[field]}</p>}
-    </div>
-  );
+  if (placed) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6">
+        <CheckCircle className="h-20 w-20 text-secondary mb-4" />
+        <h1 className="text-2xl font-bold text-foreground mb-1">Order Placed!</h1>
+        <p className="text-muted-foreground mb-1">Order ID: {orderId}</p>
+        <p className="text-sm text-muted-foreground mb-6">Cash on Delivery • ₹{total}</p>
+        <button onClick={() => navigate('/orders')} className="rounded-xl bg-primary px-8 py-3 text-sm font-bold text-primary-foreground">
+          View Orders
+        </button>
+        <button onClick={() => navigate('/home')} className="mt-3 text-sm text-primary font-medium">
+          Back to Home
+        </button>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-background pb-32">
-      <div className="sticky top-0 z-30 flex items-center gap-3 bg-card border-b border-border px-4 py-3">
+    <div className="min-h-screen bg-background pb-6">
+      <div className="sticky top-0 z-30 bg-card border-b border-border px-4 py-3 flex items-center gap-3">
         <button onClick={() => navigate(-1)}><ArrowLeft className="h-5 w-5 text-foreground" /></button>
         <h1 className="text-lg font-bold text-foreground">Checkout</h1>
       </div>
 
       <div className="px-4 pt-4 space-y-4">
-        {/* Addresses */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <h3 className="font-bold text-foreground flex items-center gap-2"><MapPin className="h-4 w-4" /> Delivery Address</h3>
-            {addresses.length > 0 && (
-              <button onClick={() => setShowAddForm(!showAddForm)} className="text-sm text-primary font-medium flex items-center gap-1">
-                <Plus className="h-3 w-3" /> Add New
-              </button>
-            )}
-          </div>
-
-          {addresses.map((addr) => (
-            <button key={addr.id} onClick={() => { setSelectedAddress(addr.id); setShowAddForm(false); }}
-              className={`w-full rounded-xl border p-3 text-left transition-colors ${selectedAddress === addr.id && !showAddForm ? 'border-primary bg-primary/5' : 'border-border bg-card'}`}>
-              <p className="text-sm font-medium text-foreground">{addr.name}</p>
-              <p className="text-xs text-muted-foreground">{addr.house}, {addr.street}, {addr.area} - {addr.pincode}</p>
-            </button>
-          ))}
-
-          {showAddForm && (
-            <div className="space-y-3 rounded-xl border border-border bg-card p-4">
-              {formField('name', 'Name')}
-              {formField('phone', 'Phone', 'tel')}
-              {formField('house', 'House / Flat')}
-              {formField('street', 'Street / Mohalla')}
-              {formField('landmark', 'Landmark')}
-              <select value={form.area} onChange={(e) => setForm({ ...form, area: e.target.value })}
-                className="w-full rounded-xl border border-border bg-background px-3 py-3 text-sm text-foreground outline-none focus:border-primary">
-                {areas.map((a) => <option key={a} value={a}>{a}</option>)}
-              </select>
-              <div>
-                <input value={form.pincode} onChange={(e) => { setForm({ ...form, pincode: e.target.value.replace(/\D/g, '').slice(0, 6) }); if (errors.pincode) setErrors({ ...errors, pincode: '' }); }}
-                  placeholder="PIN Code *" type="tel" maxLength={6}
-                  className={`w-full rounded-xl border bg-background px-3 py-3 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:border-primary ${errors.pincode ? 'border-destructive' : 'border-border'}`} />
-                {errors.pincode && <p className="mt-0.5 text-xs text-destructive">{errors.pincode}</p>}
+        <div>
+          <h2 className="text-base font-semibold text-foreground mb-3">Delivery Address</h2>
+          <div className="space-y-3">
+            {[
+              { label: 'Full Name', value: name, set: setName, key: 'name' },
+              { label: 'Phone Number', value: phone, set: setPhone, key: 'phone', type: 'tel', maxLength: 10 },
+              { label: 'House / Flat No.', value: house, set: setHouse, key: 'house' },
+              { label: 'Street / Mohalla', value: street, set: setStreet, key: 'street' },
+            ].map((f) => (
+              <div key={f.key}>
+                <input value={f.value} onChange={(e) => f.set(e.target.value)} placeholder={f.label}
+                  type={f.type || 'text'} maxLength={f.maxLength}
+                  className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-primary" />
+                {errors[f.key] && <p className="text-xs text-destructive mt-1">{errors[f.key]}</p>}
               </div>
+            ))}
+
+            <div>
+              <select value={area} onChange={(e) => setArea(e.target.value)}
+                className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm text-foreground outline-none focus:border-primary">
+                <option value="">Select Area</option>
+                {['Jalalpur', 'Darbeshpur', 'Trilochan', 'Mariahu', 'Jaunpur City'].map((a) => (
+                  <option key={a} value={a}>{a}</option>
+                ))}
+              </select>
+              {errors.area && <p className="text-xs text-destructive mt-1">{errors.area}</p>}
             </div>
-          )}
+
+            <div>
+              <input value={pincode} onChange={(e) => setPincode(e.target.value.replace(/\D/g, '').slice(0, 6))} placeholder="PIN Code"
+                type="tel" maxLength={6}
+                className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-primary" />
+              {errors.pincode && <p className="text-xs text-destructive mt-1">{errors.pincode}</p>}
+            </div>
+          </div>
         </div>
 
-        {/* Payment - COD only */}
-        <div className="space-y-2">
-          <h3 className="font-bold text-foreground flex items-center gap-2"><Banknote className="h-4 w-4" /> Payment Method</h3>
-          <div className="flex items-center gap-3 rounded-xl border-2 border-primary bg-primary/5 p-3">
-            <div className="h-4 w-4 rounded-full border-2 border-primary flex items-center justify-center">
-              <div className="h-2 w-2 rounded-full bg-primary" />
-            </div>
+        <div className="rounded-xl border border-border bg-card p-4">
+          <h2 className="text-base font-semibold text-foreground mb-2">Payment</h2>
+          <div className="flex items-center gap-2 rounded-lg bg-muted px-3 py-2.5">
+            <div className="h-4 w-4 rounded-full border-[5px] border-primary" />
             <span className="text-sm font-medium text-foreground">Cash on Delivery</span>
           </div>
         </div>
 
-        {/* Summary */}
-        <div className="space-y-2 rounded-xl bg-card border border-border p-4">
-          <h3 className="font-bold text-foreground">Order Summary</h3>
-          <div className="flex justify-between text-sm"><span className="text-muted-foreground">Items ({cart.length})</span><span className="text-foreground">Rs.{subtotal}</span></div>
-          <div className="flex justify-between text-sm"><span className="text-muted-foreground">Delivery</span><span className={delivery === 0 ? 'text-primary font-medium' : 'text-foreground'}>{delivery === 0 ? 'FREE' : `Rs.${delivery}`}</span></div>
-          <div className="border-t border-border pt-2 flex justify-between font-bold"><span className="text-foreground">Total</span><span className="text-foreground">Rs.{total}</span></div>
+        <div className="rounded-xl border border-border bg-card p-4">
+          <h2 className="text-base font-semibold text-foreground mb-3">Order Summary</h2>
+          <div className="space-y-1 text-sm">
+            <div className="flex justify-between"><span className="text-muted-foreground">Items ({cart.length})</span><span>₹{subtotal}</span></div>
+            <div className="flex justify-between"><span className="text-muted-foreground">Delivery</span><span className={delivery === 0 ? 'text-secondary font-medium' : ''}>{delivery === 0 ? 'FREE' : `₹${delivery}`}</span></div>
+            <div className="flex justify-between pt-2 border-t border-border text-base font-bold"><span>Total</span><span>₹{total}</span></div>
+          </div>
         </div>
 
-        <div className="flex items-center justify-center gap-1.5 py-2">
-          <Shield className="h-3.5 w-3.5 text-muted-foreground" />
-          <span className="text-xs text-muted-foreground">Secured by KiraNey</span>
-        </div>
-      </div>
-
-      <div className="fixed bottom-16 left-0 right-0 z-40 px-4 pb-2">
-        <button onClick={handlePlaceOrder} className="w-full rounded-xl bg-primary py-3.5 font-bold text-primary-foreground shadow-lg shadow-primary/20">
-          Place Order - Rs.{total}
+        <button onClick={handlePlaceOrder} className="w-full rounded-xl bg-primary py-4 text-center text-base font-bold text-primary-foreground">
+          Place Order • ₹{total}
         </button>
       </div>
-      <BottomNav />
     </div>
   );
 };
