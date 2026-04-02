@@ -38,20 +38,28 @@ const Home = () => {
           </button>
         </div>
 
-        <button onClick={() => navigate('/category/all')} className="flex w-full items-center gap-2 rounded-xl bg-muted px-3 py-3">
+      </div>
+
+      {/* Search Bar */}
+      <div className="px-4 mt-4">
+        <div className="flex items-center gap-2 h-[46px] rounded-[12px] bg-card border border-border px-3">
           <Search className="h-5 w-5 text-muted-foreground" />
-          <span className="text-sm text-muted-foreground">Search dal, atta, milk...</span>
-        </button>
+          <input
+            type="text"
+            readOnly
+            placeholder="Search for atta, dal, milk..."
+            className="flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-[#667788]"
+          />
+        </div>
+      </div>
+
+      {/* Banner */}
+      <div className="mx-4 mt-3 h-[140px] rounded-[14px] bg-gradient-to-r from-primary to-[#FF8F5E] px-6 flex flex-col justify-center">
+        <p className="text-[20px] font-bold text-white">Free Delivery above ₹399! 🛵</p>
+        <p className="text-[13px] text-white mt-1">Order now & save more</p>
       </div>
 
       <div className="px-4 pt-4 space-y-6">
-        {/* Banner */}
-        <div className="rounded-xl bg-gradient-to-r from-primary to-primary/80 px-5 py-4">
-          <div className="flex items-center gap-2">
-            <Truck className="h-5 w-5 text-primary-foreground" />
-            <p className="text-sm font-semibold text-primary-foreground">Free Delivery above ₹199! 🛵</p>
-          </div>
-        </div>
 
         {/* Categories */}
         <div id="categories">
