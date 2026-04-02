@@ -1,15 +1,19 @@
 import { useState, useMemo } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { Search, SlidersHorizontal } from 'lucide-react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { ArrowLeft, Search } from 'lucide-react';
 import { products, categories } from '@/data/products';
 import ProductCard from '@/components/ProductCard';
 import BottomNav from '@/components/BottomNav';
 
-const Products = () => {
-  const [searchParams] = useSearchParams();
-  const initialCat = searchParams.get('category') || 'All';
+const CategoryPage = () => {
+  const { slug } = useParams();
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
-  const [activeCategory, setActiveCategory] = useState(initialCat);
+  const [activeCategory, setActiveCategory] = useState(() => {
+    if (!slug || slug === 'all') return 'All';
+    const found = categories.find((c) => c.toLowerCase().replace(/ /g, '-') === slug);
+    return found || 'All';
+  });
 
   const filteredProducts = useMemo(() => {
     let items = [...products];
@@ -30,14 +34,19 @@ const Products = () => {
   const chips = ['All', ...categories];
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-background pb-[70px]">
       <div className="sticky top-0 z-30 bg-card border-b border-border px-4 pt-3 pb-2">
-        <h1 className="text-xl font-bold text-foreground mb-3">Products</h1>
+        <div className="flex items-center gap-3 mb-3">
+          <button onClick={() => navigate(-1)}><ArrowLeft className="h-5 w-5 text-foreground" /></button>
+          <h1 className="text-xl font-bold text-foreground">
+            {activeCategory === 'All' ? 'All Products' : activeCategory}
+          </h1>
+        </div>
 
         <div className="flex items-center gap-2 rounded-xl bg-muted px-3 py-3 mb-3">
           <Search className="h-5 w-5 text-muted-foreground" />
           <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search dal, atta, milk..."
+            placeholder="Search products..."
             className="flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground" />
         </div>
 
@@ -71,4 +80,4 @@ const Products = () => {
   );
 };
 
-export default Products;
+export default CategoryPage;

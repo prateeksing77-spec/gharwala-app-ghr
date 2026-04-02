@@ -49,7 +49,7 @@ const Checkout = () => {
         <button onClick={() => navigate('/orders')} className="rounded-xl bg-primary px-8 py-3 text-sm font-bold text-primary-foreground">
           View Orders
         </button>
-        <button onClick={() => navigate('/home')} className="mt-3 text-sm text-primary font-medium">
+        <button onClick={() => navigate('/')} className="mt-3 text-sm text-primary font-medium">
           Back to Home
         </button>
       </div>
@@ -112,9 +112,9 @@ const Checkout = () => {
         <div className="rounded-xl border border-border bg-card p-4">
           <h2 className="text-base font-semibold text-foreground mb-3">Order Summary</h2>
           <div className="space-y-1 text-sm">
-            <div className="flex justify-between"><span className="text-muted-foreground">Items ({cart.length})</span><span>₹{subtotal}</span></div>
-            <div className="flex justify-between"><span className="text-muted-foreground">Delivery</span><span className={delivery === 0 ? 'text-secondary font-medium' : ''}>{delivery === 0 ? 'FREE' : `₹${delivery}`}</span></div>
-            <div className="flex justify-between pt-2 border-t border-border text-base font-bold"><span>Total</span><span>₹{total}</span></div>
+            <div className="flex justify-between"><span className="text-muted-foreground">Items ({cart.length})</span><span className="text-foreground">₹{subtotal}</span></div>
+            <div className="flex justify-between"><span className="text-muted-foreground">Delivery</span><span className={delivery === 0 ? 'text-secondary font-medium' : 'text-foreground'}>{delivery === 0 ? 'FREE' : `₹${delivery}`}</span></div>
+            <div className="flex justify-between pt-2 border-t border-border text-base font-bold text-foreground"><span>Total</span><span>₹{total}</span></div>
           </div>
         </div>
 

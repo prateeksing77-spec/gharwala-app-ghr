@@ -18,7 +18,7 @@ const ProductCard = ({ product }: { product: Product }) => {
       <div className="flex items-center justify-between mt-auto pt-2">
         <span className="text-base font-bold text-primary">₹{product.price}</span>
         {qty === 0 ? (
-          <button onClick={() => addToCart(product)} className="flex items-center gap-1 rounded-lg border-2 border-secondary bg-secondary/10 px-3 py-1.5 text-sm font-semibold text-secondary transition-colors hover:bg-secondary hover:text-secondary-foreground">
+          <button onClick={() => addToCart(product)} className="flex items-center gap-1 rounded-lg border-2 border-secondary px-3 py-1.5 text-sm font-semibold text-secondary transition-colors hover:bg-secondary hover:text-secondary-foreground">
             ADD
           </button>
         ) : (
