@@ -13,14 +13,14 @@ const Cart = () => {
 
   if (cart.length === 0) {
     return (
-      <div className="min-h-screen bg-background pb-20">
+      <div className="min-h-screen bg-background pb-[70px]">
         <div className="px-4 pt-6">
           <h1 className="text-xl font-bold text-foreground mb-8">Cart</h1>
           <div className="flex flex-col items-center py-16">
             <ShoppingBag className="h-16 w-16 text-muted-foreground/30 mb-3" />
             <p className="text-lg font-semibold text-foreground">Your cart is empty</p>
             <p className="text-sm text-muted-foreground mt-1">Add items to get started</p>
-            <button onClick={() => navigate('/products')} className="mt-4 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground">
+            <button onClick={() => navigate('/category/all')} className="mt-4 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground">
               Browse Products
             </button>
           </div>
@@ -67,15 +67,17 @@ const Cart = () => {
         </div>
       </div>
 
-      <div className="fixed bottom-14 left-0 right-0 bg-card border-t border-border px-4 py-4 z-40">
-        <div className="space-y-1 mb-3">
-          <div className="flex justify-between text-sm"><span className="text-muted-foreground">Subtotal</span><span className="text-foreground">₹{subtotal}</span></div>
-          <div className="flex justify-between text-sm"><span className="text-muted-foreground">Delivery</span><span className={delivery === 0 ? 'text-secondary font-medium' : 'text-foreground'}>{delivery === 0 ? 'FREE' : `₹${delivery}`}</span></div>
-          <div className="flex justify-between text-base font-bold"><span>Total</span><span>₹{total}</span></div>
+      <div className="fixed bottom-[60px] left-0 right-0 z-40">
+        <div className="mx-auto max-w-[480px] bg-card border-t border-border px-4 py-4">
+          <div className="space-y-1 mb-3">
+            <div className="flex justify-between text-sm"><span className="text-muted-foreground">Subtotal</span><span className="text-foreground">₹{subtotal}</span></div>
+            <div className="flex justify-between text-sm"><span className="text-muted-foreground">Delivery</span><span className={delivery === 0 ? 'text-secondary font-medium' : 'text-foreground'}>{delivery === 0 ? 'FREE' : `₹${delivery}`}</span></div>
+            <div className="flex justify-between text-base font-bold text-foreground"><span>Total</span><span>₹{total}</span></div>
+          </div>
+          <button onClick={() => navigate('/checkout')} className="w-full rounded-xl bg-primary py-3.5 text-center text-sm font-bold text-primary-foreground">
+            Place Order • ₹{total}
+          </button>
         </div>
-        <button onClick={() => navigate('/checkout')} className="w-full rounded-xl bg-primary py-3.5 text-center text-sm font-bold text-primary-foreground">
-          Place Order • ₹{total}
-        </button>
       </div>
 
       <BottomNav />

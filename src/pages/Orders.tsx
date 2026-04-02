@@ -1,5 +1,5 @@
 import { useAppStore } from '@/stores/cartStore';
-import { Package, ChevronRight } from 'lucide-react';
+import { Package } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
 
 const statusColors: Record<string, string> = {
@@ -20,7 +20,7 @@ const Orders = () => {
   const { orders } = useAppStore();
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-background pb-[70px]">
       <div className="px-4 pt-6">
         <h1 className="text-xl font-bold text-foreground mb-4">My Orders</h1>
 

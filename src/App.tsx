@@ -1,22 +1,23 @@
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import Home from "./pages/Home";
-import Products from "./pages/Products";
+import CategoryPage from "./pages/CategoryPage";
 import Cart from "./pages/Cart";
-import Orders from "./pages/Orders";
 import Checkout from "./pages/Checkout";
+import Orders from "./pages/Orders";
 import NotFound from "./pages/NotFound";
 
 const App = () => (
   <BrowserRouter>
-    <Routes>
-      <Route path="/" element={<Navigate to="/home" replace />} />
-      <Route path="/home" element={<Home />} />
-      <Route path="/products" element={<Products />} />
-      <Route path="/cart" element={<Cart />} />
-      <Route path="/orders" element={<Orders />} />
-      <Route path="/checkout" element={<Checkout />} />
-      <Route path="*" element={<NotFound />} />
-    </Routes>
+    <div className="mx-auto max-w-[480px] min-h-screen relative">
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/category/:slug" element={<CategoryPage />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/orders" element={<Orders />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </div>
   </BrowserRouter>
 );
 
