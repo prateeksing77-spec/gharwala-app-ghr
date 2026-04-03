@@ -1,77 +1,77 @@
-import { useState, useMemo } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Search } from 'lucide-react';
-import { products, categories } from '@/data/products';
-import ProductCard from '@/components/ProductCard';
-import BottomNav from '@/components/BottomNav';
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { ArrowLeft, Search } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { Skeleton } from "@/components/ui/skeleton";
+import ProductCard from "@/components/ProductCard";
+import BottomNav from "@/components/BottomNav";
 
 const CategoryPage = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [activeCategory, setActiveCategory] = useState(() => {
-    if (!slug || slug === 'all') return 'All';
-    const found = categories.find((c) => c.toLowerCase().replace(/ /g, '-') === slug);
-    return found || 'All';
-  });
+  const [products, setProducts] = useState<any[]>([]);
+  const [category, setCategory] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
 
-  const filteredProducts = useMemo(() => {
-    let items = [...products];
-    if (activeCategory !== 'All') {
-      items = items.filter((p) => p.category === activeCategory);
-    }
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      items = items.filter((p) =>
-        p.name.toLowerCase().includes(q) ||
-        p.brand.toLowerCase().includes(q) ||
-        p.category.toLowerCase().includes(q)
-      );
-    }
-    return items;
-  }, [activeCategory, searchQuery]);
+  useEffect(() => {
+    const load = async () => {
+      if (slug) {
+        const { data: cat } = await supabase.from("categories").select("*").eq("id", slug).single();
+        setCategory(cat);
+        const { data } = await supabase.from("products").select("*").eq("category_id", slug).order("sort_order");
+        setProducts(data || []);
+      }
+      setLoading(false);
+    };
+    load();
+  }, [slug]);
 
-  const chips = ['All', ...categories];
+  const filtered = products.filter((p) =>
+    p.name.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div className="min-h-screen bg-background pb-[70px]">
-      <div className="sticky top-0 z-30 bg-card border-b border-border px-4 pt-3 pb-2">
-        <div className="flex items-center gap-3 mb-3">
-          <button onClick={() => navigate(-1)}><ArrowLeft className="h-5 w-5 text-foreground" /></button>
-          <h1 className="text-xl font-bold text-foreground">
-            {activeCategory === 'All' ? 'All Products' : activeCategory}
-          </h1>
-        </div>
-
-        <div className="flex items-center gap-2 rounded-xl bg-muted px-3 py-3 mb-3">
-          <Search className="h-5 w-5 text-muted-foreground" />
-          <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search products..."
-            className="flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground" />
-        </div>
-
-        <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
-          {chips.map((c) => (
-            <button key={c} onClick={() => setActiveCategory(c)}
-              className={`whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
-                activeCategory === c ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
-              }`}>
-              {c}
-            </button>
-          ))}
+      <div className="sticky top-0 z-30 bg-background border-b border-border px-4 py-3">
+        <div className="flex items-center gap-3">
+          <button onClick={() => navigate(-1)}>
+            <ArrowLeft className="h-5 w-5 text-foreground" />
+          </button>
+          <h1 className="text-lg font-bold text-foreground">{category?.name || "Category"}</h1>
         </div>
       </div>
 
-      <div className="px-4 pt-3">
-        {filteredProducts.length > 0 ? (
+      <div className="px-4 pt-4 space-y-4">
+        <div className="flex items-center gap-3 rounded-xl border border-border bg-card px-4" style={{ height: 42 }}>
+          <Search className="h-4 w-4 text-muted-foreground" />
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search in this category..."
+            className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none"
+          />
+        </div>
+
+        {loading ? (
           <div className="grid grid-cols-2 gap-3">
-            {filteredProducts.map((p) => <ProductCard key={p.id} product={p} />)}
+            {Array.from({ length: 6 }).map((_, i) => (
+              <Skeleton key={i} className="h-48 rounded-xl" />
+            ))}
           </div>
+        ) : filtered.length > 0 ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="grid grid-cols-2 gap-3"
+          >
+            {filtered.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </motion.div>
         ) : (
-          <div className="flex flex-col items-center py-20">
-            <Search className="h-12 w-12 text-muted-foreground/30 mb-2" />
-            <p className="text-muted-foreground">No products found</p>
-          </div>
+          <div className="text-center py-16 text-muted-foreground text-sm">No products found</div>
         )}
       </div>
 

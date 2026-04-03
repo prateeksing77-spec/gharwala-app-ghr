@@ -1,111 +1,155 @@
-import { useNavigate } from 'react-router-dom';
-import { Search, User, Truck, ChevronRight } from 'lucide-react';
-import { products, categories } from '@/data/products';
-import { useAppStore } from '@/stores/cartStore';
-import BottomNav from '@/components/BottomNav';
-import ProductCard from '@/components/ProductCard';
-
-const categoryMeta: Record<string, { emoji: string }> = {
-  Dairy: { emoji: '🥛' },
-  Grocery: { emoji: '🥘' },
-  Snacks: { emoji: '🍿' },
-  Fruits: { emoji: '🍎' },
-  Vegetables: { emoji: '🥬' },
-  'Personal Care': { emoji: '💄' },
-};
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
+import { Search, MapPin, Bell, Truck, Sun, Moon } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { Skeleton } from "@/components/ui/skeleton";
+import ProductCard from "@/components/ProductCard";
+import BottomNav from "@/components/BottomNav";
+import { useTheme } from "@/components/ThemeProvider";
 
 const Home = () => {
   const navigate = useNavigate();
-  const { orders } = useAppStore();
+  const area = localStorage.getItem("kiraney-area") || "Select Area";
+  const { theme, toggleTheme } = useTheme();
+  const [categories, setCategories] = useState<any[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const buyAgainProducts = orders.length > 0
-    ? [...new Map(orders.flatMap((o) => o.items).map((i) => [i.product.id, i.product])).values()].slice(0, 6)
-    : [];
-
-  const dealProducts = products.filter((_, i) => [0, 8, 15, 20].includes(i));
+  useEffect(() => {
+    Promise.all([
+      supabase.from("categories").select("*").order("sort_order"),
+      supabase.from("products").select("*").eq("in_stock", true).order("sort_order").limit(10),
+    ]).then(([catRes, prodRes]) => {
+      setCategories(catRes.data || []);
+      setProducts(prodRes.data || []);
+      setLoading(false);
+    });
+  }, []);
 
   return (
     <div className="min-h-screen bg-background pb-[70px]">
-      {/* Top bar */}
-      <div className="sticky top-0 z-30 bg-card border-b border-border px-4 pt-3 pb-3">
-        <div className="flex items-center justify-between mb-3">
-          <div>
-            <p className="text-xs text-muted-foreground">📍 Delivering to</p>
-            <p className="text-sm font-semibold text-foreground">My Area</p>
+      {/* Header */}
+      <div className="sticky top-0 z-30 bg-background border-b border-border px-4 py-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <MapPin className="h-4 w-4 text-primary" />
+            <div>
+              <p className="text-xs text-muted-foreground">Deliver to</p>
+              <button
+                onClick={() => navigate("/select-area")}
+                className="text-sm font-semibold text-foreground"
+              >
+                {area} ▾
+              </button>
+            </div>
           </div>
-          <button className="flex h-9 w-9 items-center justify-center rounded-full bg-muted">
-            <User className="h-5 w-5 text-muted-foreground" />
-          </button>
-        </div>
-
-      </div>
-
-      {/* Search Bar */}
-      <div className="px-4 mt-4">
-        <div className="flex items-center gap-2 h-[46px] rounded-[12px] bg-card border border-border px-3">
-          <Search className="h-5 w-5 text-muted-foreground" />
-          <input
-            type="text"
-            readOnly
-            placeholder="Search for atta, dal, milk..."
-            className="flex-1 bg-transparent text-sm text-foreground outline-none placeholder:text-[#667788]"
-          />
+          <div className="flex items-center gap-2">
+            <button onClick={toggleTheme} className="p-2 rounded-lg hover:bg-accent transition-colors">
+              {theme === "dark" ? (
+                <Sun className="h-5 w-5 text-foreground" />
+              ) : (
+                <Moon className="h-5 w-5 text-foreground" />
+              )}
+            </button>
+            <button className="p-2 rounded-lg hover:bg-accent transition-colors">
+              <Bell className="h-5 w-5 text-foreground" />
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Banner */}
-      <div className="mx-4 mt-3 h-[140px] rounded-[14px] bg-gradient-to-r from-primary to-[#FF8F5E] px-6 flex flex-col justify-center">
-        <p className="text-[20px] font-bold text-white">Free Delivery above ₹399! 🛵</p>
-        <p className="text-[13px] text-white mt-1">Order now & save more</p>
-      </div>
+      <div className="px-4 pt-4 space-y-5">
+        {/* Search */}
+        <button
+          onClick={() => navigate("/categories")}
+          className="flex items-center gap-3 w-full rounded-xl border border-border bg-card px-4"
+          style={{ height: 46 }}
+        >
+          <Search className="h-4 w-4 text-muted-foreground" />
+          <span className="text-sm text-muted-foreground">Search for atta, dal, milk...</span>
+        </button>
 
-      <div className="px-4 pt-4 space-y-6">
+        {/* Banner */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="rounded-[14px] p-5 flex flex-col justify-center"
+          style={{
+            height: 140,
+            background: "linear-gradient(135deg, hsl(142,71%,45%), hsl(142,60%,55%))",
+          }}
+        >
+          <div className="flex items-center gap-2 mb-1">
+            <Truck className="h-5 w-5 text-white" />
+            <span className="text-white/80 text-xs font-medium">FREE DELIVERY</span>
+          </div>
+          <h2 className="text-xl font-bold text-white">Free Delivery above ₹399! 🛵</h2>
+          <p className="text-white/80 text-[13px] mt-1">Order now & save more</p>
+        </motion.div>
 
         {/* Categories */}
-        <div id="categories">
-          <h2 className="text-lg font-bold text-foreground mb-3">Categories</h2>
-          <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-1">
-            {categories.map((cat) => (
-              <button key={cat} onClick={() => navigate(`/category/${cat.toLowerCase().replace(/ /g, '-')}`)}
-                className="flex flex-col items-center gap-1.5 min-w-[64px]">
-                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-muted text-2xl">
-                  {categoryMeta[cat]?.emoji || '📦'}
-                </div>
-                <span className="text-xs font-medium text-foreground whitespace-nowrap">{cat}</span>
-              </button>
-            ))}
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-base font-bold text-foreground">Shop by Category</h3>
+            <button onClick={() => navigate("/categories")} className="text-xs text-primary font-medium">
+              See All
+            </button>
           </div>
-        </div>
-
-        {/* Buy Again */}
-        {buyAgainProducts.length > 0 && (
-          <div>
-            <h2 className="text-lg font-bold text-foreground mb-3">🔄 Buy Again</h2>
-            <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
-              {buyAgainProducts.map((p) => (
-                <div key={p.id} className="min-w-[150px] max-w-[150px]">
-                  <ProductCard product={p} />
+          {loading ? (
+            <div className="flex gap-3 overflow-x-auto scrollbar-hide">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="flex flex-col items-center gap-2">
+                  <Skeleton className="h-16 w-16 rounded-full" />
+                  <Skeleton className="h-3 w-12" />
                 </div>
               ))}
             </div>
-          </div>
-        )}
+          ) : categories.length > 0 ? (
+            <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-1">
+              {categories.map((cat, i) => (
+                <motion.button
+                  key={cat.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                  onClick={() => navigate(`/category/${cat.id}`)}
+                  className="flex flex-col items-center gap-2 min-w-[72px]"
+                >
+                  <div className="h-16 w-16 rounded-full bg-accent flex items-center justify-center text-2xl border border-border">
+                    🛒
+                  </div>
+                  <span className="text-xs text-foreground font-medium text-center leading-tight line-clamp-2">
+                    {cat.name}
+                  </span>
+                </motion.button>
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground text-center py-4">Categories coming soon!</p>
+          )}
+        </div>
 
-        {/* Today's Deals */}
+        {/* Products */}
         <div>
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-lg font-bold text-foreground">⚡ Today's Deals</h2>
-            <button onClick={() => navigate('/category/all')} className="flex items-center gap-0.5 text-sm font-medium text-primary">
-              See all <ChevronRight className="h-4 w-4" />
-            </button>
-          </div>
-          <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
-            {dealProducts.map((p) => (
-              <div key={p.id} className="min-w-[160px] max-w-[160px]">
-                <ProductCard product={p} />
-              </div>
-            ))}
-          </div>
+          <h3 className="text-base font-bold text-foreground mb-3">Popular Products</h3>
+          {loading ? (
+            <div className="grid grid-cols-2 gap-3">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <Skeleton key={i} className="h-48 rounded-xl" />
+              ))}
+            </div>
+          ) : products.length > 0 ? (
+            <div className="grid grid-cols-2 gap-3">
+              {products.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12 text-muted-foreground text-sm">
+              Products coming soon! 🚀
+            </div>
+          )}
         </div>
       </div>
 
