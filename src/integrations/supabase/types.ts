@@ -14,7 +14,312 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      addresses: {
+        Row: {
+          area: string | null
+          created_at: string
+          full_address: string | null
+          id: string
+          is_default: boolean | null
+          label: string | null
+          landmark: string | null
+          user_id: string
+        }
+        Insert: {
+          area?: string | null
+          created_at?: string
+          full_address?: string | null
+          id?: string
+          is_default?: boolean | null
+          label?: string | null
+          landmark?: string | null
+          user_id: string
+        }
+        Update: {
+          area?: string | null
+          created_at?: string
+          full_address?: string | null
+          id?: string
+          is_default?: boolean | null
+          label?: string | null
+          landmark?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      categories: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string | null
+          name: string
+          parent_id: string | null
+          sort_order: number | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          name: string
+          parent_id?: string | null
+          sort_order?: number | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          name?: string
+          parent_id?: string | null
+          sort_order?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "categories_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      favorites: {
+        Row: {
+          created_at: string
+          id: string
+          product_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          product_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          product_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "favorites_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean | null
+          message: string | null
+          title: string
+          type: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          message?: string | null
+          title: string
+          type?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          message?: string | null
+          title?: string
+          type?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notify_requests: {
+        Row: {
+          area_name: string
+          created_at: string
+          id: string
+          phone: string
+        }
+        Insert: {
+          area_name: string
+          created_at?: string
+          id?: string
+          phone: string
+        }
+        Update: {
+          area_name?: string
+          created_at?: string
+          id?: string
+          phone?: string
+        }
+        Relationships: []
+      }
+      orders: {
+        Row: {
+          created_at: string
+          delivery_address: Json | null
+          delivery_charge: number | null
+          discount: number | null
+          id: string
+          items: Json
+          order_notes: string | null
+          payment_method: string | null
+          status: string | null
+          subtotal: number
+          total: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          delivery_address?: Json | null
+          delivery_charge?: number | null
+          discount?: number | null
+          id?: string
+          items: Json
+          order_notes?: string | null
+          payment_method?: string | null
+          status?: string | null
+          subtotal: number
+          total: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          delivery_address?: Json | null
+          delivery_charge?: number | null
+          discount?: number | null
+          id?: string
+          items?: Json
+          order_notes?: string | null
+          payment_method?: string | null
+          status?: string | null
+          subtotal?: number
+          total?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      products: {
+        Row: {
+          brand: string | null
+          category_id: string | null
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          in_stock: boolean | null
+          is_veg: boolean | null
+          mrp: number | null
+          name: string
+          price: number
+          sort_order: number | null
+          stock_count: number | null
+          unit: string | null
+          weight: string | null
+        }
+        Insert: {
+          brand?: string | null
+          category_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          in_stock?: boolean | null
+          is_veg?: boolean | null
+          mrp?: number | null
+          name: string
+          price: number
+          sort_order?: number | null
+          stock_count?: number | null
+          unit?: string | null
+          weight?: string | null
+        }
+        Update: {
+          brand?: string | null
+          category_id?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          in_stock?: boolean | null
+          is_veg?: boolean | null
+          mrp?: number | null
+          name?: string
+          price?: number
+          sort_order?: number | null
+          stock_count?: number | null
+          unit?: string | null
+          weight?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "products_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          area: string | null
+          avatar_url: string | null
+          created_at: string
+          id: string
+          name: string | null
+          phone: string | null
+        }
+        Insert: {
+          area?: string | null
+          avatar_url?: string | null
+          created_at?: string
+          id: string
+          name?: string | null
+          phone?: string | null
+        }
+        Update: {
+          area?: string | null
+          avatar_url?: string | null
+          created_at?: string
+          id?: string
+          name?: string | null
+          phone?: string | null
+        }
+        Relationships: []
+      }
+      serviceable_areas: {
+        Row: {
+          area_name: string
+          created_at: string
+          id: string
+          is_active: boolean | null
+        }
+        Insert: {
+          area_name: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+        }
+        Update: {
+          area_name?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
