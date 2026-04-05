@@ -187,7 +187,7 @@ const Home = () => {
         {/* Search Bar */}
         <motion.button
           whileTap={{ scale: 0.98 }}
-          onClick={() => navigate("/categories")}
+          onClick={() => navigate("/search")}
           className="flex items-center gap-3 w-full rounded-xl border border-border bg-card px-4 shadow-sm"
           style={{ height: 46 }}
         >
