@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, MapPin, Clock, CreditCard, Lock, FileText, ChevronDown, Plus, Home as HomeIcon, Briefcase, Tag } from "lucide-react";
+import { ArrowLeft, MapPin, Clock, CreditCard, Lock, FileText, Plus, Home as HomeIcon, Briefcase, Tag } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAppStore } from "@/stores/cartStore";
 import { supabase } from "@/integrations/supabase/client";

@@ -36,7 +36,7 @@ const OrderSuccess = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { orderId, total } = (location.state as any) || {};
-  const [showDetails, setShowDetails] = useState(false);
+
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6">

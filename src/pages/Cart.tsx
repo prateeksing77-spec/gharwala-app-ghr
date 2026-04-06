@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence, useMotionValue, useTransform, PanInfo } from "framer-motion";
 import { Minus, Plus, Trash2, ShoppingBag, Tag, Clock, MapPin, ChevronRight, Truck } from "lucide-react";
@@ -26,10 +26,6 @@ const SwipeableCartItem = ({
       onRemove(item.product.id);
     }
   };
-
-  const discount = item.product.mrp && item.product.mrp > item.product.price
-    ? Math.round(((item.product.mrp - item.product.price) / item.product.mrp) * 100)
-    : 0;
 
   return (
     <div className="relative overflow-hidden rounded-xl">
