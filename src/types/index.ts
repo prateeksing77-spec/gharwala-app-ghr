@@ -3,9 +3,17 @@ export interface Product {
   name: string;
   brand: string;
   category: string;
+  category_id?: string;
   price: number;
+  mrp?: number;
   unit: string;
+  weight?: string;
   image: string;
+  image_url?: string;
+  in_stock?: boolean;
+  is_veg?: boolean;
+  stock_count?: number;
+  description?: string;
 }
 
 export interface CartItem {
