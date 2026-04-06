@@ -294,9 +294,9 @@ const Cart = () => {
           <motion.div
             initial={{ opacity: 0, y: 5 }}
             animate={{ opacity: 1, y: 0 }}
-            className="rounded-xl bg-orange-500/10 border border-orange-500/30 p-3"
+            className="rounded-xl bg-destructive/10 border border-destructive/30 p-3"
           >
-            <p className="text-xs font-medium text-orange-600 dark:text-orange-400">
+            <p className="text-xs font-medium text-destructive">
               ⚠️ Add items worth ₹{MIN_ORDER - subtotal} more to place order (min ₹{MIN_ORDER})
             </p>
           </motion.div>
