@@ -38,6 +38,7 @@ const App = () => (
             <Route path="/orders" element={<Orders />} />
             <Route path="/order-success" element={<OrderSuccess />} />
             <Route path="/account" element={<Account />} />
+            <Route path="/notifications" element={<Notifications />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>
