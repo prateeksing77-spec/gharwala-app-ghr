@@ -15,6 +15,7 @@ import OrderSuccess from "./pages/OrderSuccess";
 import Account from "./pages/Account";
 import NotFound from "./pages/NotFound";
 import SearchPage from "./pages/SearchPage";
+import Notifications from "./pages/Notifications";
 
 const queryClient = new QueryClient();
 
@@ -37,6 +38,7 @@ const App = () => (
             <Route path="/orders" element={<Orders />} />
             <Route path="/order-success" element={<OrderSuccess />} />
             <Route path="/account" element={<Account />} />
+            <Route path="/notifications" element={<Notifications />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </div>
