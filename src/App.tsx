@@ -15,6 +15,7 @@ import OrderSuccess from "./pages/OrderSuccess";
 import Account from "./pages/Account";
 import NotFound from "./pages/NotFound";
 import SearchPage from "./pages/SearchPage";
+import Notifications from "./pages/Notifications";
 
 const queryClient = new QueryClient();
 
